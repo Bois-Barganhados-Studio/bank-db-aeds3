@@ -1,5 +1,10 @@
 package conta;
 
+/*
+ * CRUD para a conta
+ * Objeto de acesso aos dados (DAO)
+ */
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;

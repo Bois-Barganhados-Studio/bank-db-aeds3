@@ -1,5 +1,20 @@
 package conta;
 
+/*
+ * Objeto de conta do banco
+ * Descrição dos campos de Conta:
+ * idConta (deve ser incremental à medida que novos registros forem adicionados)
+ * (int)
+ * nomePessoa (string de tamanho variável)
+ * email (1 ou mais) (strings de tamanhos variáveis com indicador de quantidade)
+ * nomeUsuario (string de tamanho variável)
+ * senha (string de tamanho variável)
+ * cpf (string de tamanho fixo igual a 11)
+ * cidade (string de tamanho variável)
+ * transferenciasRealizadas (int)
+ * saldoConta (float)
+ */
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -8,21 +23,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Conta {
-
-    /*
-     * Descrição dos campos de Conta:
-     * 
-     * idConta (deve ser incremental à medida que novos registros forem adicionados)
-     * (int)
-     * nomePessoa (string de tamanho variável)
-     * email (1 ou mais) (strings de tamanhos variáveis com indicador de quantidade)
-     * nomeUsuario (string de tamanho variável)
-     * senha (string de tamanho variável)
-     * cpf (string de tamanho fixo igual a 11)
-     * cidade (string de tamanho variável)
-     * transferenciasRealizadas (int)
-     * saldoConta (float)
-     */
 
     private int idConta, transferenciasRealizadas;
     private String nomePessoa, nomeUsuario, senha, cpf, cidade, email[];

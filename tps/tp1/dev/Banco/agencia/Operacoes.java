@@ -1,12 +1,15 @@
 package agencia;
 
-import java.io.IOException;
+/*
+ * Classe para armazenar operações e ações do nosso banco quanto agencia
+ * Tratar exceções de operação DAO nessa classe
+ * Não pedir dados por essa classe, todas as operações já devem ter os dados
+ * passados por parametro ou por chamada
+ */
 
+import java.io.IOException;
 import conta.Conta;
 import conta.DAOConta;
-
-//Tratar exceções de operação DAO nesse arquivo
-//Não pedir dados por esse arquivo, todas as operações já devem ter os dados
 
 public class Operacoes {
 
