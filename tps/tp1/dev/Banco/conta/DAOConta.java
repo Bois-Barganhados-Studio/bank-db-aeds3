@@ -9,7 +9,6 @@ import java.io.EOFException;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 
 public class DAOConta {
 
@@ -131,7 +130,7 @@ public class DAOConta {
     }
 
     // para fazer conferência de nomes iguais
-    public Conta ler(String nomeUser) throws IOException {
+    public Conta ler(String nomeUser) throws IOException, Exception {
         int idAtual = 0;
         conta = null;
         dataArq.seek(inicio);
@@ -156,7 +155,7 @@ public class DAOConta {
         return conta;
     }
 
-    public boolean delete(int id) throws IOException {
+    public boolean delete(int id) throws IOException, Exception {
         boolean status = false;
         int idAtual = 0;
         conta = null;

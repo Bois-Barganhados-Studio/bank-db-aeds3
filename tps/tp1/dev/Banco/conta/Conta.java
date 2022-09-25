@@ -40,9 +40,8 @@ public class Conta {
         this.saldoConta = 0f;
     }
 
-    public Conta(int idConta, int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
+    public Conta(int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
             String cpf, String cidade, String[] email, float saldoConta) {
-        this.idConta = idConta;
         this.transferenciasRealizadas = transferenciasRealizadas;
         this.nomePessoa = nomePessoa;
         this.nomeUsuario = nomeUsuario;
@@ -75,14 +74,19 @@ public class Conta {
         return data;
     }
 
-    public void fromByteArray(byte ba[]) throws IOException {
+    public void fromByteArray(byte ba[]) throws IOException, Exception {
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);
         setIdConta(dis.readInt());
+        System.out.println(getIdConta());
         setNomePessoa(dis.readUTF());
+        System.out.println(getNomePessoa());
         this.email = new String[dis.readInt()];
+        System.out.println(this.email.length);
         for (int i = 0; i < this.email.length; i++) {
+            System.out.println("In loop");
             this.email[i] = dis.readUTF();
+            System.out.println(this.email[i]);
         }
         setNomeUsuario(dis.readUTF());
         setSenha(dis.readUTF());
@@ -115,9 +119,9 @@ public class Conta {
 
     @Override
     public String toString() {
-        return "Conta [cidade=" + cidade + ", cpf=" + cpf + ", email=" + Arrays.toString(email) + ", idConta=" + idConta
+        return "cidade=" + cidade + ", cpf=" + cpf + ", email=" + Arrays.toString(email) + ", idConta=" + idConta
                 + ", nomePessoa=" + nomePessoa + ", nomeUsuario=" + nomeUsuario + ", saldoConta=" + saldoConta
-                + ", senha=" + senha + ", transferenciasRealizadas=" + transferenciasRealizadas + "]";
+                + ", senha=" + senha + ", transferenciasRealizadas=" + transferenciasRealizadas;
     }
 
     public int getIdConta() {
@@ -132,7 +136,9 @@ public class Conta {
         return transferenciasRealizadas;
     }
 
-    public void setTransferenciasRealizadas(int transferenciasRealizadas) {
+    public void setTransferenciasRealizadas(int transferenciasRealizadas) throws Exception {
+        if (transferenciasRealizadas < 0)
+            throw new Exception("As transferencias não podem ter valor negativo");
         this.transferenciasRealizadas = transferenciasRealizadas;
     }
 
@@ -188,7 +194,10 @@ public class Conta {
         return saldoConta;
     }
 
-    public void setSaldoConta(float saldoConta) {
+    public void setSaldoConta(float saldoConta) throws Exception {
+        if (saldoConta < 0) {
+            throw new Exception("Saldo negativo inválido para criação de conta!");
+        }
         this.saldoConta = saldoConta;
     }
 
