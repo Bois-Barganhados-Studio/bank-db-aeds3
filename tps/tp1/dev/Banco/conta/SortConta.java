@@ -3,8 +3,11 @@ package conta;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SortConta {
 
@@ -29,7 +32,7 @@ public class SortConta {
             dataArq.seek(inicio);
             lastId = dataArq.readInt();
             total = dataArq.readInt();
-            createTmpFiles(2 * n);
+            createTmpFiles(n);
             ArrayList<Conta> lista = new ArrayList<>();
             ArrayList<RandomAccessFile> arqs = new ArrayList<>();
             int idAtual = 0, count = 0, fileNow = 0;
@@ -75,20 +78,69 @@ public class SortConta {
                     // fim distribuição
                 }
             } while (idAtual != lastId);
-            int i = m;
-            boolean isIntercaleted = false;
+            HashMap<Integer, Integer> hashInter = new HashMap<>();
+            HashMap<Integer, Integer> hashControl = new HashMap<>();
+            // start hash de controle
+            for (int i = 0; i < arqs.size(); i++) {
+                hashInter.put(i, -1);
+                hashControl.put(i, 0);
+                arqs.get(i).seek(0);
+            }
+            count = 1;
+            int indexBloco = m, fileTmp = 0;
+            boolean isIntercaleted = false, goUp = false;
+            RandomAccessFile intercaleted = null;
+            lista.clear();
             do {
-                i *= 2;
-                RandomAccessFile intercaleted = new RandomAccessFile("db/tmp" + arqs.size() + 1 + ".tmp", "rw");
-                for(int j=0;j<i;j++){
-                    arqs.get(j);
-                    //chamar função next passando o raf como parametro e retornando uma conta
+                if (goUp) {
+                    if (count < n) {
+                        count++;
+                    } else {
+                        count = 1;
+                    }
                 }
+                intercaleted = new RandomAccessFile("db/tmp" + n + count + ".tmp", "rw");
+                for (Map.Entry<Integer, Integer> et : hashInter.entrySet()) {
+                    if (hashControl.get(et.getKey()) < indexBloco && et.getValue() == -1) {
+                        Conta c1 = next(arqs.get(et.getKey()));
+                        lista.add(et.getKey(), c1);
+                    }
+                }
+                int menor = Integer.MAX_VALUE, pos = 0;
+                for (Conta c : lista) {
+                    if (c.getIdConta() < menor) {
+                        menor = c.getIdConta();
+                        pos = lista.indexOf(c);
+                    }
+                }
+                bytearray = lista.get(pos).toByteArray();
+                intercaleted.seek(intercaleted.length());
+                intercaleted.writeChar(' ');
+                intercaleted.writeInt(bytearray.length);
+                intercaleted.write(bytearray);
+                hashControl.put(pos, hashControl.get(pos) + 1);
+                hashInter.put(pos, arqs.get(pos).getFilePointer() == arqs.get(pos).length() ? -2 : -1);
+                lista.remove(pos);
             } while (!isIntercaleted);
+
+            intercaleted.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return status;
+    }
+
+    public Conta next(RandomAccessFile rf) throws Exception {
+        conta = null;
+        char lapide = rf.readChar();
+        sizeReg = rf.readInt();
+        bytearray = new byte[sizeReg];
+        rf.read(bytearray);
+        if (lapide != '*') {
+            conta = new Conta();
+            conta.fromByteArray(bytearray);
+        }
+        return conta;
     }
 
     public boolean intercalacaoTamVar(int m, int n) {
