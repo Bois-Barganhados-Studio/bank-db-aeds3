@@ -3,13 +3,16 @@ package conta;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.util.Pair;
+
 public class SortConta {
+
+    private Pair teste = new Pair<String,Integer>("teste", 1);
 
     private RandomAccessFile dataArq;
     private int lastId, sizeReg, total;
