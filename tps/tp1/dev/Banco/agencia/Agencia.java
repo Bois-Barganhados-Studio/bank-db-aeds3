@@ -66,6 +66,9 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu visual para receber informações e chamar operações do banco
+     */
     public static void menu(int op) {
         boolean status = false;
         try {
@@ -152,6 +155,11 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu visual para inserção de contas
+     * 
+     * @return Conta já preenchida
+     */
     public static Conta menuCreate() {
         try {
             Conta ct;
@@ -222,6 +230,11 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu para inserção de dados e atualização de uma conta baseada em um ID
+     * 
+     * @return conta atualizada
+     */
     public static Conta menuUpdate() {
         try {
             Conta ct;
@@ -305,6 +318,12 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu para realizar ordenação e chamar informações externas para classe de
+     * ordenação
+     * 
+     * @return booleano se a ordenação der certo
+     */
     public static boolean menuSort() {
         try {
             boolean status = false;
@@ -330,6 +349,12 @@ public class Agencia {
         }
     }
 
+    /**
+     * Chamada de metodo para iniciar um teste no sistema
+     * 
+     * @return booleano caso o teste preencha os campos corretamente
+     * @throws Exception
+     */
     public static boolean teste() throws Exception {
         boolean status = false;
         ArrayList<Conta> list = new ArrayList<>();

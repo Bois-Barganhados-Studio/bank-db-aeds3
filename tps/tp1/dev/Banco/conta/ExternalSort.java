@@ -105,6 +105,13 @@ public class ExternalSort {
         this.registroMemoria = registroMemoria;
     }
 
+    /**
+     * Função para chamar e iniciar os submetodos de ordenação para distribuir e
+     * intercalação
+     * 
+     * @return Booleano caso a ordenação dê certos
+     * @throws Exception
+     */
     public boolean sortExternal() throws Exception {
         System.out.println("Distribuindo");
         distribuicao();
@@ -114,11 +121,13 @@ public class ExternalSort {
         return true;
     }
 
+    /**
+     * Metodo para iniciar arquivos temporários
+     */
     private void iniciarSaidaTemps() {
         try {
             for (int i = 0; i < totalArquivos; i++) {
-                saidaTemporaria[i] = new RandomAccessFile(
-                        fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
+                saidaTemporaria[i] = new RandomAccessFile(fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
             }
         } catch (IOException e) {
             System.err.println("Falha ao iniciar arquivos temporários");
@@ -126,6 +135,13 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função para ler os dados de dentro de um arquivo com acesso randomico
+     * 
+     * @param rf Arquivo randomico para ler dados de uma conta
+     * @return Conta que foi lida do arquivo
+     * @throws Exception
+     */
     public Conta readConta(RandomAccessFile rf) throws Exception {
         Conta reg = null;
         char lapide = rf.readChar();
@@ -139,6 +155,12 @@ public class ExternalSort {
         return reg;
     }
 
+    /**
+     * Função para resgatar dados de um arquivo temporário e salvar no hash de
+     * controle e na lista de registros atuais do arquivo temporário
+     * 
+     * @throws Exception
+     */
     private void resgatarDadosTmp() throws Exception {
         Conta registro = null;
         for (int i = 0; i < totalArquivos; i++) {
@@ -150,6 +172,13 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função para receber uma conta de dentro de um arquivo temporário
+     * 
+     * @param index indice do arquivo temporário para procurar da lista de arquivos
+     * @return Conta localizada dentro do arquivo
+     * @throws Exception
+     */
     private Conta getRegistroTmp(int index) throws Exception {
         Conta registro = null;
         if (entradaTemporaria[index].getFilePointer() != entradaTemporaria[index].length())
@@ -157,12 +186,16 @@ public class ExternalSort {
         return registro;
     }
 
+    /**
+     * Função que retorna um numero de arquivos para ler internamente
+     * 
+     * @return total de arquivos disponiveis para ler
+     */
     private int numeroArqsLer() {
         int totFiles = 0;
         try {
             for (int i = 0; i < totalArquivos; i++) {
-                bytesRestantesTmp[i] = entradaTemporaria[i].length()
-                        - entradaTemporaria[i].getFilePointer();
+                bytesRestantesTmp[i] = entradaTemporaria[i].length() - entradaTemporaria[i].getFilePointer();
                 if (bytesRestantesTmp[i] > 0) {
                     totFiles++;
                 }
@@ -174,6 +207,11 @@ public class ExternalSort {
         return totFiles;
     }
 
+    /**
+     * Alternar entre arquivos temporarios que estão sendo ordenados internamente
+     * 
+     * @throws Exception
+     */
     private void alternarTmpFiles() throws Exception {
         for (int i = 0; i < totalArquivos; i++) {
             entradaTemporaria[i].close();
@@ -182,13 +220,18 @@ public class ExternalSort {
         numPrimRead = numPrimRead == 0 ? totalArquivos : 0;
         numPrimWrite = numPrimWrite == 0 ? totalArquivos : 0;
         for (int i = 0; i < totalArquivos; i++) {
-            entradaTemporaria[i] = new RandomAccessFile(
-                    fileTmp + (i + numPrimRead) + tipoTmp, "rw");
-            saidaTemporaria[i] = new RandomAccessFile(
-                    fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
+            entradaTemporaria[i] = new RandomAccessFile(fileTmp + (i + numPrimRead) + tipoTmp, "rw");
+            saidaTemporaria[i] = new RandomAccessFile(fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
         }
     }
 
+    /**
+     * Função que pega um indentificador do indice de um arquivo temporário para
+     * acessar arquivos dentro de um array ou dentro de funções
+     * 
+     * @param index parametro de indice do arquivo
+     * @return
+     */
     private int getIdentificadorArq(int index) {
         if (index == 0) {
             return ((totalArquivos - 1) + numPrimRead);
@@ -197,6 +240,12 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função para adicionar registros dentro de uma lista baseado em um arquivo
+     * temporário
+     * 
+     * @throws Exception
+     */
     private void lerRegistros() throws Exception {
         try {
             for (int i = 0; i < registroMemoria; i++) {
@@ -211,10 +260,17 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função que verifica se os dados estão disponiveis para leitura dentro do
+     * arquivo original de dados (database)
+     */
     private boolean isAvaliable() throws Exception {
         return databaseFile.getFilePointer() == databaseFile.length();
     }
 
+    /**
+     * Função para finalizar as conexões com arquivos temporários
+     */
     private void finalizarSaidaTmp() {
         try {
             for (int i = 0; i < totalArquivos; i++) {
@@ -226,6 +282,13 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Método principal para iniciar o processo de distribuição no qual chama e
+     * inicia todos os arquivos temporários enquanto distribui e ordena os dados
+     * dentro de cada arquivo temporário
+     * 
+     * @throws Exception
+     */
     private void distribuicao() throws Exception {
         int indexInsercao = 0;
         setLastId(databaseFile.readInt());
@@ -248,6 +311,13 @@ public class ExternalSort {
         databaseFile.close();
     }
 
+    /**
+     * Método de intercalação principal que chama as funções principais para acessar
+     * os arquivos temporários gerados pela distribuição e mesclar os dados de cada
+     * arquivo temporário até restar um arquivo apenas
+     * 
+     * @throws Exception
+     */
     private void intercalacao() throws Exception {
         int indexInsercao = 0;
         numPrimRead = 0;
@@ -274,6 +344,7 @@ public class ExternalSort {
         }
         int numArq = getIdentificadorArq(indexInsercao);
         if (NEWFILE) {
+            // adicionar em um arquivo novo
             if (databaseSaida.equals(databaseFileName)) {
                 throw new Exception("Nome de arquivo alvo inválido para trasnferir dados ordenados.");
             }
@@ -306,6 +377,7 @@ public class ExternalSort {
             } else
                 System.err.println("Arquivo de dados esta em uso no momento não pode ser apagado!");
         }
+        // finalizando arquivos temporários e excluindo dados temporários
         for (int i = 0; i < 2 * totalArquivos; i++) {
             File f = new File(fileTmp + i + tipoTmp);
             if (f.exists()) {
@@ -314,6 +386,14 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função para adicionar informações de ultimo ID e total de registros dentro do
+     * novo arquivo que acabou de ser ordenado
+     * 
+     * @param tmp  Arquivo temporario pre ordenado
+     * @param alvo Arquivo ordenado que vai ser o alvo para inserção do cabeçalho
+     * @throws Exception
+     */
     private void addCabecalho(RandomAccessFile tmp, RandomAccessFile alvo) throws Exception {
         alvo.writeInt(getLastId());
         alvo.writeInt(getTotal());
@@ -325,6 +405,13 @@ public class ExternalSort {
         }
     }
 
+    /**
+     * Função para mesclar os registros dos arquivos temporários em um unico arquivo
+     * e realizar a intercalação propriamente dita
+     * 
+     * @param index
+     * @throws Exception
+     */
     private void mesclarRegistros(int index) throws Exception {
         Conta registro = null;
         hashContas.clear();
@@ -340,6 +427,7 @@ public class ExternalSort {
                     break;
                 }
             }
+            // escrevendo dados dentro do arquivo temporario
             saidaTemporaria[index].writeChar(' ');
             saidaTemporaria[index].writeInt(auxRegistro.toByteArray().length);
             saidaTemporaria[index].write(auxRegistro.toByteArray());
