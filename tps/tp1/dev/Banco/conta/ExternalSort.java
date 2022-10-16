@@ -28,8 +28,8 @@ public class ExternalSort {
     private int[] totalRegistros;
     private Conta auxRegistro;
     private int totalArquivos, registroMemoria, numPrimRead, numPrimWrite, indexMenorRegistro, numTmpPrim, numTmpSec;
-    private String FILE_TMP;
-    private String TIPO_TMP;
+    private String fileTmp;
+    private String tipoTmp;
     private String databaseFileName, databaseSaida;
     private boolean NEWFILE = false;
     private int lastId, total;
@@ -60,8 +60,8 @@ public class ExternalSort {
         databaseFile = new RandomAccessFile(databaseFileName, "rw");
         entradaTemporaria = new RandomAccessFile[totalArquivos];
         saidaTemporaria = new RandomAccessFile[totalArquivos];
-        FILE_TMP = "db/ArqTemp";
-        TIPO_TMP = ".tmp";
+        fileTmp = "db/ArqTemp";
+        tipoTmp = ".tmp";
         databaseSaida = "db/conta_banco_sorted.db";
     }
 
@@ -118,7 +118,7 @@ public class ExternalSort {
         try {
             for (int i = 0; i < totalArquivos; i++) {
                 saidaTemporaria[i] = new RandomAccessFile(
-                        FILE_TMP + (i + numPrimWrite) + TIPO_TMP, "rw");
+                        fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
             }
         } catch (IOException e) {
             System.err.println("Falha ao iniciar arquivos temporários");
@@ -183,9 +183,9 @@ public class ExternalSort {
         numPrimWrite = numPrimWrite == 0 ? totalArquivos : 0;
         for (int i = 0; i < totalArquivos; i++) {
             entradaTemporaria[i] = new RandomAccessFile(
-                    FILE_TMP + (i + numPrimRead) + TIPO_TMP, "rw");
+                    fileTmp + (i + numPrimRead) + tipoTmp, "rw");
             saidaTemporaria[i] = new RandomAccessFile(
-                    FILE_TMP + (i + numPrimWrite) + TIPO_TMP, "rw");
+                    fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
         }
     }
 
@@ -254,9 +254,9 @@ public class ExternalSort {
         numPrimWrite = totalArquivos;
         for (int i = 0; i < totalArquivos; i++) {
             entradaTemporaria[i] = new RandomAccessFile(
-                    FILE_TMP + (i + numPrimRead) + TIPO_TMP, "rw");
+                    fileTmp + (i + numPrimRead) + tipoTmp, "rw");
             saidaTemporaria[i] = new RandomAccessFile(
-                    FILE_TMP + (i + numPrimWrite) + TIPO_TMP, "rw");
+                    fileTmp + (i + numPrimWrite) + tipoTmp, "rw");
         }
         while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) {
             mesclarRegistros(indexInsercao);
@@ -281,7 +281,7 @@ public class ExternalSort {
             if (alvo.exists()) {
                 alvo.delete();
             }
-            RandomAccessFile tempFile = new RandomAccessFile(FILE_TMP + numArq + TIPO_TMP, "rw");
+            RandomAccessFile tempFile = new RandomAccessFile(fileTmp + numArq + tipoTmp, "rw");
             RandomAccessFile alvoFinal = new RandomAccessFile(databaseSaida, "rw");
             addCabecalho(tempFile, alvoFinal);
             tempFile.close();
@@ -293,7 +293,7 @@ public class ExternalSort {
             if (fl.exists()) {
                 fl.delete();
             }
-            RandomAccessFile tempFile = new RandomAccessFile(FILE_TMP + numArq + TIPO_TMP, "rw");
+            RandomAccessFile tempFile = new RandomAccessFile(fileTmp + numArq + tipoTmp, "rw");
             RandomAccessFile alvoFinal = new RandomAccessFile(tempBkp, "rw");
             addCabecalho(tempFile, alvoFinal);
             tempFile.close();
@@ -307,7 +307,7 @@ public class ExternalSort {
                 System.err.println("Arquivo de dados esta em uso no momento não pode ser apagado!");
         }
         for (int i = 0; i < 2 * totalArquivos; i++) {
-            File f = new File(FILE_TMP + i + TIPO_TMP);
+            File f = new File(fileTmp + i + tipoTmp);
             if (f.exists()) {
                 f.delete();
             }
