@@ -20,9 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Conta {
+public class Conta implements Comparable<Conta>, Serializable {
 
     private int idConta, transferenciasRealizadas;
     private String nomePessoa, nomeUsuario, senha, cpf, cidade, email[];
@@ -40,8 +41,32 @@ public class Conta {
         this.saldoConta = 0f;
     }
 
+    @Override
+    public int compareTo(Conta u) {
+        int result = 0;
+        if (this.idConta > u.idConta) {
+            result = 1;
+        } else if (this.idConta < u.idConta) {
+            result = -1;
+        }
+        return result;
+    }
+
     public Conta(int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
             String cpf, String cidade, String[] email, float saldoConta) {
+        this.transferenciasRealizadas = transferenciasRealizadas;
+        this.nomePessoa = nomePessoa;
+        this.nomeUsuario = nomeUsuario;
+        this.senha = senha;
+        this.cpf = cpf;
+        this.cidade = cidade;
+        this.email = email;
+        this.saldoConta = saldoConta;
+    }
+
+    public Conta(int id, int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
+            String cpf, String cidade, String[] email, float saldoConta) {
+        this.idConta = id;
         this.transferenciasRealizadas = transferenciasRealizadas;
         this.nomePessoa = nomePessoa;
         this.nomeUsuario = nomeUsuario;
@@ -78,15 +103,10 @@ public class Conta {
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);
         setIdConta(dis.readInt());
-        System.out.println(getIdConta());
         setNomePessoa(dis.readUTF());
-        System.out.println(getNomePessoa());
         this.email = new String[dis.readInt()];
-        System.out.println(this.email.length);
         for (int i = 0; i < this.email.length; i++) {
-            System.out.println("In loop");
             this.email[i] = dis.readUTF();
-            System.out.println(this.email[i]);
         }
         setNomeUsuario(dis.readUTF());
         setSenha(dis.readUTF());

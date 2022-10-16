@@ -5,6 +5,8 @@ package agencia;
  * Tratar exceções de operação DAO nessa classe
  * Não pedir dados por essa classe, todas as operações já devem ter os dados
  * passados por parametro ou por chamada
+ * @author Leon Junio
+ * @author Edmar Oliveira
  */
 
 import java.io.IOException;
@@ -30,6 +32,7 @@ public class Operacoes {
         } catch (IOException io) {
             System.err
                     .println("Falha ao criar conta, erro de I/O foi encontrado internamente\nErro: " + io.getMessage());
+            io.printStackTrace();
             status = false;
         } catch (Exception e) {
             System.err.println("Erro inesperado ao criar conta encontrado: " + e.getMessage());
@@ -99,17 +102,8 @@ public class Operacoes {
         }
     }
 
-    /*
-     * m = registros
-     * n = caminhos
-     * tipo = qual ordenação
-     */
-    public void ordenarArquivo(int m, int n, int tipo) {
-
-    }
-
     public void finalizar() throws Exception {
-        dao.close();
+        DAOConta.close();
         dao = null;
     }
 }
