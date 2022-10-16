@@ -13,12 +13,13 @@ import estruturas.ArvoreBPlus;
 
 public class DAOConta {
 
-    private RandomAccessFile dataArq;
+    private static RandomAccessFile dataArq;
     private int lastId, sizeReg, total;
-    private long lastPointer, inicio;
+    private static long lastPointer, inicio;
     private Conta conta;
     private byte[] bytearray;
 
+    // Construtor padrão de contas do banco
     public DAOConta() throws IOException {
         try {
             dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
@@ -33,9 +34,12 @@ public class DAOConta {
         }
     }
 
+    // metodo para inserir no banco de dados de contas
     public boolean inserir(Conta obj) throws IOException, Exception {
+        boolean first = false;
         dataArq.seek(inicio);
         if (lastId == 0) {
+            first = true;
             dataArq.writeInt(lastId);
             dataArq.writeInt(total);
             lastId = 1;
@@ -45,8 +49,14 @@ public class DAOConta {
             total++;
         }
         lastPointer = dataArq.length();
-        obj.setIdConta(lastId);
-        if (ler(obj.getNomeUsuario()) != null) {
+        if (obj.getIdConta() == 0 || obj.getIdConta() == -1) {
+            obj.setIdConta(lastId);
+        } else {
+            if (obj.getIdConta() > lastId) {
+                lastId = obj.getIdConta() + 1;
+            }
+        }
+        if (first == false && ler(obj.getNomeUsuario()) != null) {
             throw new Exception(
                     "O nome de usuário já existe cadastrado na base de dados\nUsuario: " + obj.getNomeUsuario());
         }
@@ -61,6 +71,7 @@ public class DAOConta {
         return true;
     }
 
+    // metodo para alterar dados de um objeto do banco de dados
     public boolean alterar(Conta obj) throws IOException, Exception {
         int idAtual = 0;
         boolean status = false;
@@ -105,6 +116,7 @@ public class DAOConta {
         return status;
     }
 
+    // leitura de dados a partir de um ID
     public Conta ler(int id) throws IOException, Exception {
         int idAtual = 0;
         conta = null;
@@ -132,11 +144,10 @@ public class DAOConta {
 
     // para fazer conferência de nomes iguais
     public Conta ler(String nomeUser) throws IOException, Exception {
-        int idAtual = 0;
         conta = null;
         dataArq.seek(inicio);
-        lastId = dataArq.readInt();
-        total = dataArq.readInt();
+        int lastId = dataArq.readInt();
+        int total = dataArq.readInt();
         do {
             char lapide = dataArq.readChar();
             sizeReg = dataArq.readInt();
@@ -145,17 +156,17 @@ public class DAOConta {
             if (lapide != '*') {
                 conta = new Conta();
                 conta.fromByteArray(bytearray);
-                idAtual = conta.getIdConta();
                 if (conta.getNomeUsuario().equalsIgnoreCase(nomeUser)) {
-                    idAtual = lastId;
+                    break;
                 } else {
                     conta = null;
                 }
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
         return conta;
     }
 
+    // Metodo para deletar objeto do banco de dados
     public boolean delete(int id) throws IOException, Exception {
         boolean status = false;
         int idAtual = 0;
@@ -187,7 +198,7 @@ public class DAOConta {
         return status;
     }
 
-    public void close() throws IOException {
+    public static void close() throws IOException {
         dataArq.close();
     }
 
@@ -212,4 +223,12 @@ public class DAOConta {
             }
         } while (idAtual != lastId);
     }
+
+    public static void open() throws IOException {
+        dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
+        inicio = dataArq.getFilePointer();
+        lastPointer = dataArq.length();
+        dataArq.seek(lastPointer);
+    }
+
 }

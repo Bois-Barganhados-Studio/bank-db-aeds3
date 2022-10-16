@@ -1,13 +1,17 @@
 package agencia;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
 import conta.Conta;
-import conta.SortConta;
+import conta.ExternalSort;
 
 /*
  * Classe para fazer interface com o usuário e realizar ações de IO do banco
+ * @author Leon Junio
+ * @author Edmar Oliveira
  */
 
 public class Agencia {
@@ -35,6 +39,7 @@ public class Agencia {
                     System.out.println("4- Atualizar dados de conta:");
                     System.out.println("5- Deletar conta do banco:");
                     System.out.println("6- Ordenar arquivo de contas:");
+                    System.out.println("7- Popular Banco de dados (teste):");
                     System.out.println("0- Sair do sistema e finalizar operações");
                     System.out.println("Digite a opção de operação:");
                     op = scan.nextInt();
@@ -61,6 +66,9 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu visual para receber informações e chamar operações do banco
+     */
     public static void menu(int op) {
         boolean status = false;
         try {
@@ -121,6 +129,16 @@ public class Agencia {
                     System.out.println("Ordenar arquivo de contas:");
                     status = menuSort();
                     break;
+                case 7:
+                    System.out.println("Digite 1 para popular banco de dados!");
+                    int cs = scan.nextInt();
+                    if (cs == 1) {
+                        System.out.println("Iniciando teste de banco de dados:");
+                        status = teste();
+                    } else {
+                        status = true;
+                    }
+                    break;
                 default:
                     throw new InputMismatchException(op + " não é válido para executar no sistema.");
             }
@@ -137,6 +155,11 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu visual para inserção de contas
+     * 
+     * @return Conta já preenchida
+     */
     public static Conta menuCreate() {
         try {
             Conta ct;
@@ -207,6 +230,11 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu para inserção de dados e atualização de uma conta baseada em um ID
+     * 
+     * @return conta atualizada
+     */
     public static Conta menuUpdate() {
         try {
             Conta ct;
@@ -290,44 +318,59 @@ public class Agencia {
         }
     }
 
+    /**
+     * Menu para realizar ordenação e chamar informações externas para classe de
+     * ordenação
+     * 
+     * @return booleano se a ordenação der certo
+     */
     public static boolean menuSort() {
         try {
             boolean status = false;
             System.out.println("1- Intercalação balanceada comum");
-            System.out.println("2- Intercalação balanceada com blocos de segmento variável");
-            System.out.println("3- Intercalação balanceada com seleção por substituição");
-            System.out.println("4- Intercalação balanceada com n+1 arquivos");
-            System.out.println("5- Intercalação Polifásica");
+            System.out.println("2- Cancelar");
             int op = scan.nextInt();
-            System.out.println("Digite o total de registros 'm':");
-            int m = scan.nextInt();
-            System.out.println("Digite o total de caminhos 'n':");
-            int n = scan.nextInt();
-            SortConta sorts = new SortConta();
-            switch (op) {
-                case 1:
-                    sorts.intercalacaoBal(m, n);
-                    break;
-                case 2:
-                    sorts.intercalacaoTamVar(m, n);
-                    break;
-                case 3:
-                    sorts.intercalacaoSelec(m, n);
-                    break;
-                case 4:
-                    sorts.intercalacaoBalNMO(m, n);
-                    break;
-                case 5:
-                    sorts.intercalacaoPoli(m, n);
-                    break;
-                default:
-                    throw new Exception("Opção inválida");
+            if (op == 1) {
+                System.out.println("Digite o total de registros 'm':");
+                int m = scan.nextInt();
+                System.out.println("Digite o total de caminhos 'n':");
+                int n = scan.nextInt();
+                System.out.println("Aonde salvar os dados ordenados?\n1- Criar novo arquivo ordenado\n" +
+                        "2- Usar arquivo original do banco de dados");
+                int dataSave = scan.nextInt();
+                ExternalSort sorter = new ExternalSort("db/conta_banco.db", m, n, dataSave == 1);
+                status = sorter.sortExternal();
             }
             return status;
         } catch (Exception e) {
-            System.err.println("Erro interno ao tentar realziar intercalação\nErro: " + e.getMessage());
+            System.err.println("Erro interno ao tentar realizar intercalação\nErro: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Chamada de metodo para iniciar um teste no sistema
+     * 
+     * @return booleano caso o teste preencha os campos corretamente
+     * @throws Exception
+     */
+    public static boolean teste() throws Exception {
+        boolean status = false;
+        ArrayList<Conta> list = new ArrayList<>();
+        String[] names = { "Fulano", "Beltrano", "Ciclano", "Joao", "Jose", "Maria", "Ana", "Antonio", "Juca",
+                "Vacilao" };
+        String[] emails = { "teste@teste" };
+        for (int i = 0; i < 10; i++) {
+            list.add(new Conta(i + 1, 0, names[i], names[i], "12345678", "00000000000", "BH", emails, 0f));
+        }
+        Collections.shuffle(list);
+        for (Conta c : list) {
+            operacao.criarConta(c);
+        }
+        list.clear();
+        status = list.isEmpty();
+        return status;
     }
 
 }
