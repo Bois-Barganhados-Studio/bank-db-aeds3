@@ -167,6 +167,7 @@ public class Agencia {
             float saldo;
             int transferencias;
             String[] emails;
+            scan.nextLine();
             System.out.println("Criação de conta mágica:");
             System.out.println("Digite o nome completo do cliente:");
             nome = scan.nextLine();
