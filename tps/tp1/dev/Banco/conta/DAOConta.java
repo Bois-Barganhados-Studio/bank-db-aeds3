@@ -9,6 +9,7 @@ import java.io.EOFException;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import estruturas.ArvoreBPlus;
 
 public class DAOConta {
 
@@ -190,4 +191,25 @@ public class DAOConta {
         dataArq.close();
     }
 
+    public void createBPlusTree() throws Exception {
+        ArvoreBPlus arvore = new ArvoreBPlus(5);
+        long pointer = 0;
+        dataArq.seek(inicio);
+        lastId = dataArq.readInt();
+        total = dataArq.readInt();
+        int idAtual = 0;
+        do {
+            pointer = dataArq.getFilePointer();
+            char lapide = dataArq.readChar();
+            sizeReg = dataArq.readInt();
+            bytearray = new byte[sizeReg];
+            dataArq.read(bytearray);
+            if (lapide != '*') {
+                conta = new Conta();
+                conta.fromByteArray(bytearray);
+                idAtual = conta.getIdConta();
+                arvore.inserir(idAtual, pointer);
+            }
+        } while (idAtual != lastId);
+    }
 }

@@ -8,12 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.util.Pair;
-
 public class SortConta {
-
-    private Pair teste = new Pair<String,Integer>("teste", 1);
-
     private RandomAccessFile dataArq;
     private int lastId, sizeReg, total;
     private long lastPointer, inicio;
