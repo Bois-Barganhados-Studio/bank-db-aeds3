@@ -14,13 +14,14 @@ import estruturas.ArvoreBPlus;
 public class DAOConta {
 
     private static RandomAccessFile dataArq;
+    private static ArvoreBPlus arvore;
     private int lastId, sizeReg, total;
     private static long lastPointer, inicio;
     private Conta conta;
     private byte[] bytearray;
 
     // Construtor padrão de contas do banco
-    public DAOConta() throws IOException {
+    public DAOConta() throws Exception {
         try {
             dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
             conta = null;
@@ -28,6 +29,7 @@ public class DAOConta {
             lastPointer = dataArq.length();
             lastId = dataArq.readInt();
             total = dataArq.readInt();
+            createBPlusTree();
         } catch (EOFException eof) {
             lastId = 0;
             total = 0;
@@ -203,7 +205,7 @@ public class DAOConta {
     }
 
     public void createBPlusTree() throws Exception {
-        ArvoreBPlus arvore = new ArvoreBPlus(5);
+        arvore = new ArvoreBPlus(5);
         long pointer = 0;
         dataArq.seek(inicio);
         lastId = dataArq.readInt();

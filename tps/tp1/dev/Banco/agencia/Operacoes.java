@@ -18,7 +18,7 @@ public class Operacoes {
     private boolean status;
     private DAOConta dao;
 
-    public Operacoes() throws IOException {
+    public Operacoes() throws Exception {
         status = false;
         dao = new DAOConta();
     }
