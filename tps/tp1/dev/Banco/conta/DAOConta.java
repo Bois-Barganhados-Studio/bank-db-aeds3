@@ -78,7 +78,6 @@ public class DAOConta {
         dataArq.seek(inicio);
         dataArq.writeInt(lastId);
         dataArq.writeInt(total);
-
         createBPlusTree();
         createListaInvertidaNome();
         createListaInvertidaCidade();
