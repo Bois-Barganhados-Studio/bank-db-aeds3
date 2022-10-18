@@ -163,7 +163,7 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getNomePessoa() {
-        return nomePessoa;
+        return nomePessoa.replace("\n", "");
     }
 
     public void setNomePessoa(String nomePessoa) {
@@ -171,7 +171,7 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getNomeUsuario() {
-        return nomeUsuario;
+        return nomeUsuario.replace("\n", "");
     }
 
     public void setNomeUsuario(String nomeUsuario) {
@@ -179,7 +179,7 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getSenha() {
-        return senha;
+        return senha.replace("\n", "");
     }
 
     public void setSenha(String senha) {
@@ -187,7 +187,7 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getCpf() {
-        return cpf;
+        return cpf.replace("\n", "");
     }
 
     public void setCpf(String cpf) {
@@ -195,7 +195,7 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getCidade() {
-        return cidade;
+        return cidade.replace("\n", "");
     }
 
     public void setCidade(String cidade) {

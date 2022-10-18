@@ -42,6 +42,7 @@ public class HashConta {
     }
 
     public HashConta(int tamBuck) throws IOException, Exception {
+        System.out.println("Acess HASH");
         this.tamBuck = tamBuck;
         this.p = 2;
         ponteirosEnd = new RandomAccessFile("db/hasher.db", "rw");
@@ -160,7 +161,7 @@ public class HashConta {
     public void adicionar(int index, long pointer) {
         try {
             System.out.println("INDEX ALVO: " + index);
-            long posHash = (index % (int) Math.pow(2, p)) * CONST_MATH;
+            long posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
             System.out.println("Hash pos conta: " + posHash);
             ponteirosEnd.seek(posHash);
             long posBkt = ponteirosEnd.readLong();
@@ -184,7 +185,8 @@ public class HashConta {
                         ponteirosEnd.writeLong(i * tamBuckBytes);
                     }
                     bucketsList.setLength(bucketsList.length() + tamBuckBytes);
-                    posHash = (index % (int) Math.pow(2, p - 1)) * CONST_MATH + ((int) Math.pow(2, p - 1) * Long.BYTES);
+                    posHash = (index % (int) Math.pow(2, p - 1)) * 8 + CONST_MATH
+                            + ((int) Math.pow(2, p - 1) * Long.BYTES);
                     ponteirosEnd.seek(posHash);
                     ponteirosEnd.writeLong(bucketsList.length() - tamBuckBytes);
                     int[] keyStore = new int[tamBuck];
@@ -215,7 +217,8 @@ public class HashConta {
                 } else {
                     // Bucket cheio e p diferente
                     bucketsList.setLength(bucketsList.length() + tamBuckBytes);
-                    posHash = (index % (int) Math.pow(2, p - 1)) * CONST_MATH + ((int) Math.pow(2, p - 1) * Long.BYTES);
+                    posHash = (index % (int) Math.pow(2, p - 1)) * 8 + CONST_MATH
+                            + ((int) Math.pow(2, p - 1) * Long.BYTES);
                     ponteirosEnd.seek(posHash);
                     ponteirosEnd.writeLong(bucketsList.length() - tamBuckBytes);
                     int[] keyStore = new int[tamBuck];
@@ -260,7 +263,7 @@ public class HashConta {
      */
     public void atualizar(int index, long novoEnd) {
         try {
-            int posHash = (index % (int) Math.pow(2, p)) * CONST_MATH;
+            int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
             ponteirosEnd.seek(posHash);
             long posBkt = ponteirosEnd.readLong();
             bucketsList.seek(posBkt);
@@ -314,7 +317,7 @@ public class HashConta {
     public long remover(int index) {
         long pointer = -1;
         try {
-            int posHash = (index % (int) Math.pow(2, p)) * CONST_MATH;
+            int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
             ponteirosEnd.seek(posHash);
             long posBkt = ponteirosEnd.readLong();
             bucketsList.seek(posBkt);
@@ -355,7 +358,7 @@ public class HashConta {
     public long localizar(int index) {
         long pointer = -1;
         try {
-            int posHash = (index % (int) Math.pow(2, p)) * CONST_MATH;
+            int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
             ponteirosEnd.seek(posHash);
             long posBkt = ponteirosEnd.readLong();
             bucketsList.seek(posBkt);
@@ -432,6 +435,6 @@ public class HashConta {
     private final int tamBuckBytes;
     private final int TAM_INT = (Integer.BYTES + Long.BYTES);
     private final int TAM_INT_2 = (2 * Integer.BYTES);
-    private final int CONST_MATH = 8 + 4;
+    private final int CONST_MATH = 4;
 
 }

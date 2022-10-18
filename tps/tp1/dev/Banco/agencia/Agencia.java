@@ -1,7 +1,6 @@
 package agencia;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
@@ -28,8 +27,8 @@ public class Agencia {
             System.out.println("=                      THE MAGIC BANK                       =");
             System.out.println("=============================================================");
             Thread.sleep(2000);
-            operacao = new Operacoes();
             running = true;
+            operacao = new Operacoes();
             while (running) {
                 try {
                     System.out.println("\nBem Vindo ao banco mágico, escolha uma opção:");

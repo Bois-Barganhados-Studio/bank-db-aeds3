@@ -26,8 +26,10 @@ public class DAOConta {
 
     // Construtor padrão de contas do banco
     public DAOConta() throws Exception {
+        System.out.println("START DAO");
         try {
             dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
+            hash = new HashConta(4);
             conta = null;
             inicio = dataArq.getFilePointer();
             lastPointer = dataArq.length();
@@ -36,7 +38,6 @@ public class DAOConta {
             createBPlusTree();
             createListaInvertidaNome();
             createListaInvertidaCidade();
-            hash = new HashConta(4);
             // hash.getPointer(1);
         } catch (EOFException eof) {
             lastId = 0;
@@ -127,7 +128,7 @@ public class DAOConta {
                     conta = null;
                 }
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
 
         createBPlusTree();
         createListaInvertidaNome();
@@ -152,12 +153,12 @@ public class DAOConta {
                 conta.fromByteArray(bytearray);
                 idAtual = conta.getIdConta();
                 if (idAtual == id) {
-                    idAtual = lastId;
+                    break;
                 } else {
                     conta = null;
                 }
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
         return conta;
     }
 
@@ -262,7 +263,7 @@ public class DAOConta {
                 idAtual = conta.getIdConta();
                 arvore.inserir(idAtual, pointer);
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
     }
 
     public void createListaInvertidaNome() throws Exception {
@@ -290,7 +291,7 @@ public class DAOConta {
                     lista.writeLong(dataArq.getFilePointer() - sizeReg - 6);
                 }
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
         lista.close();
     }
 
@@ -320,7 +321,7 @@ public class DAOConta {
                 }
 
             }
-        } while (idAtual != lastId);
+        } while (dataArq.getFilePointer() != dataArq.length());
         lista.close();
     }
 
