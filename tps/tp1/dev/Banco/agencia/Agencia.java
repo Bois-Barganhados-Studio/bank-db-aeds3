@@ -360,12 +360,12 @@ public class Agencia {
         boolean status = false;
         ArrayList<Conta> list = new ArrayList<>();
         String[] names = { "Fulano", "Beltrano", "Ciclano", "Joao", "Jose", "Maria", "Ana", "Antonio", "Juca",
-                "Vacilao" };
+                "Vacilao", "Leon", "Edmar", "Pedro", "Gustavo", "Hayala", "Pedro" };
         String[] emails = { "teste@teste" };
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < names.length; i++) {
             list.add(new Conta(i + 1, 0, names[i], names[i], "12345678", "00000000000", "BH", emails, 0f));
         }
-        Collections.shuffle(list);
+        // Collections.shuffle(list);
         for (Conta c : list) {
             operacao.criarConta(c);
         }

@@ -9,6 +9,8 @@ import java.io.EOFException;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+
 import estruturas.ArvoreBPlus;
 
 public class DAOConta {
@@ -30,6 +32,8 @@ public class DAOConta {
             lastId = dataArq.readInt();
             total = dataArq.readInt();
             createBPlusTree();
+            createListaInvertidaNome();
+            createListaInvertidaCidade();
         } catch (EOFException eof) {
             lastId = 0;
             total = 0;
@@ -70,6 +74,10 @@ public class DAOConta {
         dataArq.seek(inicio);
         dataArq.writeInt(lastId);
         dataArq.writeInt(total);
+
+        createBPlusTree();
+        createListaInvertidaNome();
+        createListaInvertidaCidade();
         return true;
     }
 
@@ -115,6 +123,10 @@ public class DAOConta {
                 }
             }
         } while (idAtual != lastId);
+
+        createBPlusTree();
+        createListaInvertidaNome();
+        createListaInvertidaCidade();
         return status;
     }
 
@@ -197,6 +209,10 @@ public class DAOConta {
                 }
             }
         } while (idAtual != lastId);
+
+        createBPlusTree();
+        createListaInvertidaNome();
+        createListaInvertidaCidade();
         return status;
     }
 
@@ -224,6 +240,65 @@ public class DAOConta {
                 arvore.inserir(idAtual, pointer);
             }
         } while (idAtual != lastId);
+    }
+
+    public void createListaInvertidaNome() throws Exception {
+        RandomAccessFile lista = new RandomAccessFile("db/listaInvertidaNome.dat", "rw");
+        // percorre o dataarq e cria a lista baseado no nome
+        // nomes repetidos ficam no mesmo registro
+        ArrayList<String> nomes = new ArrayList<>();
+        dataArq.seek(inicio);
+        lastId = dataArq.readInt();
+        total = dataArq.readInt();
+        int idAtual = 0;
+        do {
+            char lapide = dataArq.readChar();
+            sizeReg = dataArq.readInt();
+            bytearray = new byte[sizeReg];
+            dataArq.read(bytearray);
+            if (lapide != '*') {
+                conta = new Conta();
+                conta.fromByteArray(bytearray);
+                idAtual = conta.getIdConta();
+                // escreve no arquivo de lista invertida
+                if (!nomes.contains(conta.getNomeUsuario())) {
+                    nomes.add(conta.getNomeUsuario());
+                    lista.writeUTF(conta.getNomeUsuario());
+                    lista.writeLong(dataArq.getFilePointer() - sizeReg - 6);
+                }
+            }
+        } while (idAtual != lastId);
+        lista.close();
+    }
+
+    public void createListaInvertidaCidade() throws Exception {
+        RandomAccessFile lista = new RandomAccessFile("db/listaInvertidaCidade.dat", "rw");
+        // percorre o dataarq e cria a lista baseado na cidade
+        // cidades repetidas ficam no mesmo registro
+        ArrayList<String> cidades = new ArrayList<>();
+        dataArq.seek(inicio);
+        lastId = dataArq.readInt();
+        total = dataArq.readInt();
+        int idAtual = 0;
+        do {
+            char lapide = dataArq.readChar();
+            sizeReg = dataArq.readInt();
+            bytearray = new byte[sizeReg];
+            dataArq.read(bytearray);
+            if (lapide != '*') {
+                conta = new Conta();
+                conta.fromByteArray(bytearray);
+                idAtual = conta.getIdConta();
+                // escreve no arquivo de lista invertida
+                if (!cidades.contains(conta.getCidade())) {
+                    cidades.add(conta.getCidade());
+                    lista.writeUTF(conta.getCidade());
+                    lista.writeLong(dataArq.getFilePointer() - sizeReg - 6);
+                }
+
+            }
+        } while (idAtual != lastId);
+        lista.close();
     }
 
     public static void open() throws IOException {
