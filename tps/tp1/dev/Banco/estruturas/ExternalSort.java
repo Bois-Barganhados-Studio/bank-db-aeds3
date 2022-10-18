@@ -1,4 +1,4 @@
-package conta;
+package estruturas;
 
 import java.io.RandomAccessFile;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import conta.Conta;
+import conta.DAOConta;
 
 /*
  * Classe para realizar a ordenação externa do arquivo de contas do banco de dados

@@ -10,11 +10,13 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import estruturas.ArvoreBPlus;
+import estruturas.HashConta;
 
 public class DAOConta {
 
     private static RandomAccessFile dataArq;
     private static ArvoreBPlus arvore;
+    private HashConta hash;
     private int lastId, sizeReg, total;
     private static long lastPointer, inicio;
     private Conta conta;
@@ -29,7 +31,9 @@ public class DAOConta {
             lastPointer = dataArq.length();
             lastId = dataArq.readInt();
             total = dataArq.readInt();
-            createBPlusTree();
+            // createBPlusTree();
+            hash = new HashConta(4);
+            // hash.getPointer(1);
         } catch (EOFException eof) {
             lastId = 0;
             total = 0;
@@ -70,6 +74,7 @@ public class DAOConta {
         dataArq.seek(inicio);
         dataArq.writeInt(lastId);
         dataArq.writeInt(total);
+        hash.adicionar(obj.getIdConta(), lastPointer);
         return true;
     }
 
@@ -107,6 +112,7 @@ public class DAOConta {
                         dataArq.writeChar(' ');
                         dataArq.writeInt(obj.getIdConta());
                         dataArq.write(bytearray);
+                        hash.atualizar(obj.getIdConta(), lastPointer);
                     }
                     idAtual = lastId;
                     status = true;
@@ -168,6 +174,23 @@ public class DAOConta {
         return conta;
     }
 
+    // leitura de dados a partir de um ID
+    public Conta lerHash(int id) throws IOException, Exception {
+        conta = null;
+        dataArq.seek(inicio);
+        long pointer = hash.localizar(id);
+        dataArq.seek(pointer);
+        char lapide = dataArq.readChar();
+        sizeReg = dataArq.readInt();
+        bytearray = new byte[sizeReg];
+        dataArq.read(bytearray);
+        if (lapide != '*') {
+            conta = new Conta();
+            conta.fromByteArray(bytearray);
+        }
+        return conta;
+    }
+
     // Metodo para deletar objeto do banco de dados
     public boolean delete(int id) throws IOException, Exception {
         boolean status = false;
@@ -189,6 +212,7 @@ public class DAOConta {
                 if (idAtual == id) {
                     dataArq.seek(pointer);
                     dataArq.writeChar('*');
+                    hash.remover(id);
                     idAtual = lastId;
                     status = true;
                     conta = null;

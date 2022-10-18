@@ -6,7 +6,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
 import conta.Conta;
-import conta.ExternalSort;
+import estruturas.ExternalSort;
 
 /*
  * Classe para fazer interface com o usuário e realizar ações de IO do banco
@@ -40,6 +40,7 @@ public class Agencia {
                     System.out.println("5- Deletar conta do banco:");
                     System.out.println("6- Ordenar arquivo de contas:");
                     System.out.println("7- Popular Banco de dados (teste):");
+                    System.out.println("8- Buscar informação no HASH:");
                     System.out.println("0- Sair do sistema e finalizar operações");
                     System.out.println("Digite a opção de operação:");
                     op = scan.nextInt();
@@ -138,6 +139,12 @@ public class Agencia {
                     } else {
                         status = true;
                     }
+                    break;
+                case 8:
+                    System.out.println("Digite o ID de busca");
+                    int idbc = scan.nextInt();
+                    Conta conta = operacao.lerHash(idbc);
+                    System.out.println(conta.toString());
                     break;
                 default:
                     throw new InputMismatchException(op + " não é válido para executar no sistema.");

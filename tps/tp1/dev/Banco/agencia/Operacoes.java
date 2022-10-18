@@ -96,6 +96,26 @@ public class Operacoes {
     }
 
     /**
+     * Operação de Leitura para retornar dados de uma conta especifica usando hash
+     * 
+     * @param id id para procurar no banco de dados
+     * @return
+     */
+    public Conta lerHash(int id) {
+        try {
+            return dao.lerHash(id);
+        } catch (IOException io) {
+            System.err.println("Erro de IO durante tentativa de leitura\nErro: " + io.getMessage());
+            io.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            System.err.println("Erro inesperado durante tentativa de leitura\nErro: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Operação para atualizar conta e alterar os dados
      * 
      * @param conta conta com os novos dados
