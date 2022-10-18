@@ -26,6 +26,31 @@ class No {
     this.folha = true;
     this.irmao = null;
   }
+
+  public void print() {
+    System.out.print("[");
+    for (int i = 0; i < nChaves; i++) {
+      System.out.print(chaves[i] == null ? "null" : chaves[i].id);
+      if (i < nChaves - 1) {
+        System.out.print(", ");
+      }
+    }
+    System.out.print("]");
+  }
+
+  public No clone() {
+    No novo = new No(ordem);
+    novo.nChaves = nChaves;
+    novo.folha = folha;
+    novo.irmao = irmao;
+    for (int i = 0; i < nChaves; i++) {
+      novo.chaves[i] = chaves[i];
+    }
+    for (int i = 0; i <= nChaves; i++) {
+      novo.filhos[i] = filhos[i];
+    }
+    return novo;
+  }
 }
 
 public class ArvoreBPlus {
@@ -47,21 +72,29 @@ public class ArvoreBPlus {
 
     // Se o nó for folha, insere a chave
     if (no.folha) {
-      no = inserirChave(no, id, pointer);
-      imprimir();
-      this.nElementos++;
       // Se o nó estiver cheio, divide o nó
-      if (no.nChaves == no.ordem - 1) {
+      if (no.nChaves + 1 == no.ordem) {
         int i = 0;
-        if (pai != null) {
-          while (i < pai.nChaves && id > pai.chaves[i].id) {
-            i++;
-          }
-          pai = dividir(no, pai, i);
-        } else {
-          pai = dividir(no, pai, i);
-          return pai;
+        while (pai != null && i < pai.nChaves && id > pai.chaves[i].id) {
+          i++; // Posição do filho
         }
+        if (pai == null) {
+          pai = dividir(no, pai, i, id, pointer);
+          this.nElementos++;
+          return pai;
+        } else if (pai.nChaves + 1 == pai.ordem) {
+
+          pai = dividir(no, pai, i, id, pointer);
+          this.nElementos++;
+          return pai;
+        } else {
+          dividir(no, pai, i, id, pointer);
+          this.nElementos++;
+
+        }
+      } else {
+        no = inserirChave(no, id, pointer);
+        this.nElementos++;
       }
     } else {
       // Se o nó não for folha, procura o filho onde a chave deve ser inserida
@@ -69,10 +102,11 @@ public class ArvoreBPlus {
       while (i < no.nChaves && id > no.chaves[i].id) {
         i++;
       }
-      no.filhos[i] = inserir(no.filhos[i], no, id, pointer);
-      // Se o filho estiver cheio, divide o filho
-      if (no.filhos[i].nChaves == no.ordem - 1) {
-        no = dividir(no.filhos[i], no, i);
+      if (no != null && no.nChaves + 1 == no.ordem && no.filhos[i].folha
+          && no.filhos[i].nChaves + 1 == no.filhos[i].ordem) {
+        no = inserir(no.filhos[i], no, id, pointer);
+      } else {
+        no.filhos[i] = inserir(no.filhos[i], no, id, pointer);
       }
     }
     return no;
@@ -90,27 +124,30 @@ public class ArvoreBPlus {
     return no;
   }
 
-  private No dividir(No no, No pai, int i) {
+  private No dividir(No no, No pai, int i, int id, long pointer) {
     // Cria um novo nó
     No novo = new No(no.ordem);
     // Copia a metade das chaves para o novo nó
     int meio = no.nChaves / 2;
 
-    System.out.println("meio: " + meio);
-    System.out.println("no.chaves[meio]: " + no.chaves[meio].id);
     for (int j = meio; j < no.ordem - 1; j++) {
       novo.chaves[j - meio] = no.chaves[j];
       novo.nChaves++;
       no.nChaves--;
     }
+    // Insere a nova chave no nó correto
+    if (id < no.chaves[meio].id) {
+      no = inserirChave(no, id, pointer);
+    } else {
+      novo = inserirChave(novo, id, pointer);
+    }
+
     // Se o nó não for folha, copia a metade dos filhos para o novo nó
     if (!no.folha) {
       for (int j = meio; j < no.ordem; j++) {
         novo.filhos[j - meio] = no.filhos[j];
       }
     }
-    // Atualiza o número de chaves do nó
-    no.nChaves = meio;
 
     // Se o nó for folha, atualiza o ponteiro para o próximo nó
     if (no.folha) {
@@ -120,18 +157,39 @@ public class ArvoreBPlus {
     if (pai == null) {
       pai = new No(no.ordem);
       pai.filhos[0] = no;
-      pai.nChaves++;
+      pai.folha = false;
     }
     // Insere a chave do meio do nó no pai
-    pai = inserirChave(pai, no.chaves[meio].id, no.chaves[meio].pointer);
-    // Insere o novo nó no pai
-    for (int j = pai.nChaves - 1; j > i; j--) {
-      pai.filhos[j + 1] = pai.filhos[j];
+    if (pai.nChaves + 1 == pai.ordem) {
+      No tmp = dividir(pai.clone(), null, 0, no.chaves[meio].id, no.chaves[meio].pointer);
+
+      for (int j = 0; j < tmp.ordem; j++) {
+        if (tmp.filhos[j] != null) {
+          for (int k = 0; k < tmp.ordem; k++) {
+            if (tmp.filhos[j].chaves[tmp.filhos[j].nChaves - 1].id >= pai.filhos[k].chaves[0].id &&
+                (j == 0 || tmp.filhos[j - 1].chaves[tmp.filhos[j - 1].nChaves - 1].id < pai.filhos[k].chaves[0].id)) {
+              tmp.filhos[j].filhos[k - (3 * j)] = pai.filhos[k];
+              if (k == tmp.ordem - 1) {
+                tmp.filhos[j].filhos[(k + 1) - (3 * j)] = novo;
+              }
+            }
+          }
+        }
+      }
+
+      pai = tmp;
+
+      return pai;
+    } else {
+      pai = inserirChave(pai, no.chaves[meio].id, no.chaves[meio].pointer);
+      // Insere o novo nó no pai
+      for (int j = pai.nChaves - 1; j > i; j--) {
+        pai.filhos[j + 1] = pai.filhos[j];
+      }
+      pai.filhos[i + 1] = novo;
+
+      return pai;
     }
-    pai.filhos[i + 1] = novo;
-    // Atualiza o número de filhos do pai
-    pai.nChaves++;
-    return pai;
   }
 
   public long buscar(int id) {
@@ -190,23 +248,19 @@ public class ArvoreBPlus {
   }
 
   public void imprimir() {
+    System.out.println("Imprimindo arvore:");
     imprimir(this.raiz, 0);
-    System.out.println("");
+    System.out.println("\n----\n");
   }
 
   private void imprimir(No no, int nivel) {
     if (no != null) {
-      for (int i = 0; i < no.nChaves; i++) {
-        imprimir(no.filhos[i], nivel + 1);
-        for (int j = 0; j < nivel; j++) {
-          System.out.print("  ");
-        }
-        if (no.chaves[i] != null) {
-          System.out.print(no.chaves[i].id + " ");
-        }
-      }
+      System.out.print(nivel + ": ");
+      no.print();
       System.out.println("");
-      imprimir(no.filhos[no.nChaves], nivel + 1);
+      for (int i = 0; i < no.ordem; i++) {
+        imprimir(no.filhos[i], nivel + 1);
+      }
     }
   }
 }
