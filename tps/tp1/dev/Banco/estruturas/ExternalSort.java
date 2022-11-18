@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import conta.Conta;
 import conta.DAOConta;
 
@@ -349,7 +348,7 @@ public class ExternalSort {
         if (NEWFILE) {
             // adicionar em um arquivo novo
             if (databaseSaida.equals(databaseFileName)) {
-                throw new Exception("Nome de arquivo alvo inválido para trasnferir dados ordenados.");
+                throw new Exception("Nome de arquivo alvo inválido para transferir dados ordenados.");
             }
             File alvo = new File(databaseSaida);
             if (alvo.exists()) {

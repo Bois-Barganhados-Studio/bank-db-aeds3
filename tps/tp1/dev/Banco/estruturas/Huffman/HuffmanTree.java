@@ -1,4 +1,4 @@
-package Huffman;
+package estruturas.Huffman;
 
 import java.io.*;
 import java.util.Hashtable;

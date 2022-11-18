@@ -1,4 +1,4 @@
-package Huffman;
+package estruturas.Huffman;
 
 /**
  * @author Vinicius G Santos

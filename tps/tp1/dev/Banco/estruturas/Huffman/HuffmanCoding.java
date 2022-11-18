@@ -1,4 +1,4 @@
-package Huffman;
+package estruturas.Huffman;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +18,12 @@ public class HuffmanCoding {
     private static final int MAX_MEM_BYTES = 10000;
     public static final String VERSION = "HuffmanCompressaov0.1";
 
-    HuffmanCoding() {}
+    HuffmanCoding() {
+    }
 
     /**
      * Closes and dereference RandomAccessFile attributes.
+     * 
      * @throws IOException IO error caused by RandoAccessFile.
      */
     public void close() throws IOException {
@@ -37,6 +39,7 @@ public class HuffmanCoding {
 
     /**
      * Generates a compression target file based on the given source file.
+     * 
      * @param srcFile The source file to be compressed.
      * @return The target file of the compression.
      */
@@ -46,12 +49,15 @@ public class HuffmanCoding {
     }
 
     /**
-     * Reads all the bytes from source file, counts their occurrence amount then returns a TreeSet.
+     * Reads all the bytes from source file, counts their occurrence amount then
+     * returns a TreeSet.
+     * 
      * @return A TreeSet of the occurrences and their weights.
      * @throws IOException IO error caused by RandoAccessFile.
      */
     private TreeSet<Node> getOccurrences() throws IOException {
-        if (src == null || src.length() == 0) throw new IOException("Cannot read from source file");
+        if (src == null || src.length() == 0)
+            throw new IOException("Cannot read from source file");
         Hashtable<Byte, Integer> occurrenceTable = new Hashtable<>();
         // Rewinds source file pointer
         src.seek(0);
@@ -73,7 +79,8 @@ public class HuffmanCoding {
         }
         // Gets the occurrences (keys) in the hashtable
         ArrayList<Byte> values = new ArrayList<>(occurrenceTable.keySet());
-        // Gets the weights (amount of appearances) is position relative to its occurrence
+        // Gets the weights (amount of appearances) is position relative to its
+        // occurrence
         ArrayList<Integer> weights = new ArrayList<>(occurrenceTable.values());
         // Creates TreeSet with custom ordering
         TreeSet<Node> occurrences = new TreeSet<>(Node::TreeSetCompareTo);
@@ -90,7 +97,8 @@ public class HuffmanCoding {
      * Compresses the given source file based on the Huffman coding algorithm.
      *
      * @param srcFile The name of the source file.
-     * @throws IOException If the File is not found or IO error caused by RandomAccessFile.
+     * @throws IOException If the File is not found or IO error caused by
+     *                     RandomAccessFile.
      */
     public File compress(File srcFile) throws IOException {
         // Close possible open raf attributes then prep new raf
@@ -111,7 +119,7 @@ public class HuffmanCoding {
         // Calculates the length of the data compressed
         long bitLen = getEncodedBitLen(occurrences, encodeTable);
         // Writes in the file 'x' first bits to be ignored
-        byte fillerBits = (byte)(bitLen % 8);
+        byte fillerBits = (byte) (bitLen % 8);
         output.write(fillerBits);
         // Creates string builder to append the binary representation
         StringBuilder bin = new StringBuilder();
@@ -139,8 +147,10 @@ public class HuffmanCoding {
 
     /**
      * Calculates the length in bits of the compressed data.
+     * 
      * @param occurrences TreeSet with the occurrence and its amount.
-     * @param encodeTable A hashtable containing each occurrence and its binary code as a string generated from the Huffman tree.
+     * @param encodeTable A hashtable containing each occurrence and its binary code
+     *                    as a string generated from the Huffman tree.
      * @return The length in bits of the compressed data.
      */
     private long getEncodedBitLen(TreeSet<Node> occurrences, Hashtable<Byte, String> encodeTable) {
@@ -157,19 +167,24 @@ public class HuffmanCoding {
      * Encodes the given byte array using the given encode hash table
      * that contains the encoded binary (generated from the Huffman tree)
      * as a string for each occurrence of the byte.
-     * @param encodeTable A hashtable containing each occurrence and its binary code as a string generated from the Huffman tree.
-     * @param ba The byte array to be encoded.
-     * @param len The length of the byte array to be used.
-     * @param bin A string builder to append the binary representation of the encoded data.
+     * 
+     * @param encodeTable A hashtable containing each occurrence and its binary code
+     *                    as a string generated from the Huffman tree.
+     * @param ba          The byte array to be encoded.
+     * @param len         The length of the byte array to be used.
+     * @param bin         A string builder to append the binary representation of
+     *                    the encoded data.
      */
-    private byte[] encode(Hashtable<Byte, String> encodeTable, byte[] ba, long len, StringBuilder bin) throws IOException {
+    private byte[] encode(Hashtable<Byte, String> encodeTable, byte[] ba, long len, StringBuilder bin)
+            throws IOException {
         // For each byte up to 'len' position in the byte array
         // appends its string binary representation to the string builder
         for (int i = 0; i < (int) len; i++)
             bin.append(encodeTable.get(ba[i]));
         // Trying to free some memory
         ba = null;
-        System.gc();
+        /// System.gc(); não é interessante dar GC no meio da execução (pode dar crash
+        /// ou congelar a execução por alguns segundos)
         // Keeps reading and encoding new bytes util the length is divisible by 8
         // so that it won't produce gaps in the compressed file
         while ((bin.length() % 8) != 0) {
@@ -186,23 +201,25 @@ public class HuffmanCoding {
      * Decompresses the given source file based on the Huffman coding algorithm.
      *
      * @param srcFile The name of the source file.
-     * @throws IOException If the File is not found or IO error caused by RandomAccessFile.
+     * @throws IOException If the File is not found or IO error caused by
+     *                     RandomAccessFile.
      */
     public void Decompress(File srcFile) throws IOException {
         close();
-        src = new RandomAccessFile(srcFile, "r");
-        output = new RandomAccessFile(getDecompressionFile(srcFile), "rw");
+        try (RandomAccessFile src = new RandomAccessFile(srcFile, "r")) {
+            output = new RandomAccessFile(getDecompressionFile(srcFile), "rw");
+            byte[] ba = new byte[src.readInt()];
+            src.read(ba);
+            Hashtable<String, Byte> decodeTable = new HuffmanTree(ba).getDecodeTable();
 
-        byte[] ba = new byte[src.readInt()];
-        src.read(ba);
-        Hashtable<String, Byte> decodeTable = new HuffmanTree(ba).getDecodeTable();
-
-        // TODO - Decompression
+            
+        }
     }
 
     /**
      * Gets the decompression target file
      * based on the given compressed file.
+     * 
      * @param srcFile The source (compressed) file.
      * @return A decompression target file.
      */
@@ -213,12 +230,15 @@ public class HuffmanCoding {
 
     // Basic Testing
     public static void main(String[] args) throws IOException {
-        byte[] ba = {1, 1, 1, 1, 2, 2, 7, 7, 7, 7, 7, 14, 14, 16, 17};
+        byte[] ba = { 1, 1, 1, 1, 2, 2, 7, 7, 7, 7, 7, 14, 14, 16, 17 };
         // Caso queira testar coloque o path
         File in = new File("");
-        RandomAccessFile raf = new RandomAccessFile(in, "rw");
-        raf.write(ba);
-        HuffmanCoding h = new HuffmanCoding();
-        h.Decompress(h.compress(in));
+        try (RandomAccessFile raf = new RandomAccessFile(in, "rw")) {
+            raf.write(ba);
+            HuffmanCoding h = new HuffmanCoding();
+            h.Decompress(h.compress(in));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
