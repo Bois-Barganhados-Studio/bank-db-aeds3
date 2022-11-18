@@ -40,6 +40,7 @@ public class Agencia {
                     System.out.println("6- Ordenar arquivo de contas:");
                     System.out.println("7- Popular Banco de dados (teste):");
                     System.out.println("8- Buscar informação no HASH:");
+                    System.out.println("9- Sistema de compressão de arquivo:");
                     System.out.println("0- Sair do sistema e finalizar operações");
                     System.out.println("Digite a opção de operação:");
                     op = scan.nextInt();
@@ -144,6 +145,12 @@ public class Agencia {
                     int idbc = scan.nextInt();
                     Conta conta = operacao.lerHash(idbc);
                     System.out.println(conta.toString());
+                    break;
+                case 9:
+                    status = menuCompressor();
+                    if (status) {
+                        System.out.println("Atualizado com sucesso na base de dados!");
+                    }
                     break;
                 default:
                     throw new InputMismatchException(op + " não é válido para executar no sistema.");
@@ -378,6 +385,28 @@ public class Agencia {
         list.clear();
         status = list.isEmpty();
         return status;
+    }
+
+    /**
+     * Sistema que chama os modulos de compressão LZW e Huffman
+     * 
+     * @return Positivo caso a ação seja executada com sucecsso
+     * @throws Exception
+     */
+    public static boolean menuCompressor() throws Exception {
+        System.out.println("Sistema de compressão e descompressão de arquivos:");
+        System.out.println("1- Comprimir usando Huffman");
+        System.out.println("2- Descomprimir usando Huffman");
+        System.out.println("3- Comprimir usando LZW");
+        System.out.println("4- Descomprimir usando LZW");
+        System.out.println("5- Cancelar operação");
+        int op = scan.nextInt();
+        if (op == 1 || op == 3)
+            return operacao.compress(op);
+        else if (op == 2 || op == 4)
+            return operacao.decompress(op);
+        else
+            return true;
     }
 
 }

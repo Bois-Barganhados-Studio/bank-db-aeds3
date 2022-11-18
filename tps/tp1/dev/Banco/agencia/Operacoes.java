@@ -1,5 +1,7 @@
 package agencia;
 
+import java.io.File;
+
 /*
  * Classe para armazenar operações e ações do nosso banco quanto agencia
  * Tratar exceções de operação DAO nessa classe
@@ -12,11 +14,14 @@ package agencia;
 import java.io.IOException;
 import conta.Conta;
 import conta.DAOConta;
+import estruturas.Huffman.HuffmanCoding;
+import estruturas.Huffman.HuffmanTree;
 
 public class Operacoes {
 
     private boolean status;
     private DAOConta dao;
+    public static final String DATABASE = "db/conta_banco.db";
 
     public Operacoes() throws Exception {
         status = false;
@@ -152,6 +157,37 @@ public class Operacoes {
             return false;
         } catch (Exception e) {
             System.err.println("Erro inesperado durante tentativa de deletar conta\nErro: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Chama função de compressão dos algoritmos LZW e Huffman
+     * 
+     * @return
+     */
+    public boolean compress(int op) throws Exception {
+        if (op == 1) {
+            HuffmanCoding huff = new HuffmanCoding();
+            File out = huff.compress(new File(DATABASE));
+            return out.isFile();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Chama função de compressão dos algoritmos LZW e Huffman
+     * 
+     * @return
+     */
+    public boolean decompress(int op) throws Exception {
+        if (op == 2) {
+            HuffmanCoding huff = new HuffmanCoding();
+            //mexer depois na forma de envio da descompressão
+            File out = huff.decompress(new File(DATABASE));
+            return out.isFile();
+        } else {
             return false;
         }
     }

@@ -18,7 +18,7 @@ public class HuffmanCoding {
     private static final int MAX_MEM_BYTES = 10000;
     public static final String VERSION = "HuffmanCompressaov0.1";
 
-    HuffmanCoding() {
+    public HuffmanCoding() {
     }
 
     /**
@@ -204,16 +204,17 @@ public class HuffmanCoding {
      * @throws IOException If the File is not found or IO error caused by
      *                     RandomAccessFile.
      */
-    public void Decompress(File srcFile) throws IOException {
+    public File decompress(File srcFile) throws IOException {
         close();
+        File outfile = null;
         try (RandomAccessFile src = new RandomAccessFile(srcFile, "r")) {
             output = new RandomAccessFile(getDecompressionFile(srcFile), "rw");
             byte[] ba = new byte[src.readInt()];
             src.read(ba);
             Hashtable<String, Byte> decodeTable = new HuffmanTree(ba).getDecodeTable();
 
-            
         }
+        return outfile;
     }
 
     /**
@@ -229,16 +230,15 @@ public class HuffmanCoding {
     }
 
     // Basic Testing
-    public static void main(String[] args) throws IOException {
+    public boolean doTest(File in) throws IOException {
         byte[] ba = { 1, 1, 1, 1, 2, 2, 7, 7, 7, 7, 7, 14, 14, 16, 17 };
-        // Caso queira testar coloque o path
-        File in = new File("");
+        boolean sit = false;
         try (RandomAccessFile raf = new RandomAccessFile(in, "rw")) {
             raf.write(ba);
-            HuffmanCoding h = new HuffmanCoding();
-            h.Decompress(h.compress(in));
+            sit = this.decompress(this.compress(in)).isFile();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return sit;
     }
 }

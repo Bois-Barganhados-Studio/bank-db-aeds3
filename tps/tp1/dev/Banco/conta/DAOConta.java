@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import agencia.Operacoes;
 import estruturas.ArvoreBPlus;
 import estruturas.HashConta;
 
@@ -28,7 +29,7 @@ public class DAOConta {
     public DAOConta() throws Exception {
         System.out.println("START DAO");
         try {
-            dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
+            dataArq = new RandomAccessFile(Operacoes.DATABASE, "rw");
             hash = new HashConta(4);
             conta = null;
             inicio = dataArq.getFilePointer();
@@ -326,7 +327,7 @@ public class DAOConta {
     }
 
     public static void open() throws IOException {
-        dataArq = new RandomAccessFile("db/conta_banco.db", "rw");
+        dataArq = new RandomAccessFile(Operacoes.DATABASE, "rw");
         inicio = dataArq.getFilePointer();
         lastPointer = dataArq.length();
         dataArq.seek(lastPointer);
