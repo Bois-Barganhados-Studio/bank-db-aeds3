@@ -13,8 +13,10 @@ import java.io.File;
 
 import java.io.IOException;
 import conta.Conta;
+import estruturas.ExternalSort.ExternalSort;
 import conta.DAOConta;
 import estruturas.Huffman.HuffmanCoding;
+import estruturas.LZW.LZW;
 
 public class Operacoes {
 
@@ -49,6 +51,21 @@ public class Operacoes {
             status = false;
         }
         return status;
+    }
+
+    /**
+     * Sistema que chama o metodo de ordenação externa
+     * 
+     * @param m        total de registros
+     * @param n        total de caminhos
+     * @param dataSave opcional para criar novo arquivo ou não
+     * @return booleano caso o arquivo seja ordenado com sucesso
+     */
+    public boolean ordenarArq(int m, int n, int dataSave) throws Exception {
+        ExternalSort sorter = new ExternalSort("db/conta_banco.db", m, n, dataSave == 1);
+        boolean sit = sorter.sortExternal();
+        freeRam();
+        return sit;
     }
 
     /**
@@ -172,8 +189,10 @@ public class Operacoes {
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         } else {
+            LZW lzw = new LZW(new File(DATABASE));
+            File out = lzw.compress();
             freeRam();
-            return false;
+            return out.isFile() && out.getTotalSpace() > 0;
         }
     }
 
@@ -189,8 +208,10 @@ public class Operacoes {
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         } else {
+            LZW lzw = new LZW(new File(DATABASE));
+            File out = lzw.decompress();
             freeRam();
-            return false;
+            return out.isFile() && out.getTotalSpace() > 0;
         }
     }
 
