@@ -5,8 +5,6 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
 import conta.Conta;
-import estruturas.ExternalSort;
-import estruturas.Huffman.HuffmanCoding;
 
 /*
  * Classe para fazer interface com o usuário e realizar ações de IO do banco
@@ -41,7 +39,7 @@ public class Agencia {
                     System.out.println("6- Ordenar arquivo de contas:");
                     System.out.println("7- Popular Banco de dados (teste):");
                     System.out.println("8- Buscar informação no HASH:");
-                    System.out.println("9- Sistema de compressão de arquivo:");
+                    System.out.println("9- Sistema de compressão/descompressão do banco de dados:");
                     System.out.println("0- Sair do sistema e finalizar operações");
                     System.out.println("Digite a opção de operação:");
                     op = scan.nextInt();
@@ -166,6 +164,7 @@ public class Agencia {
             System.err.println("Opção inválida para o menu! " + im.getMessage());
         } catch (Exception e) {
             System.err.println("Erro inesperado ao tentar realizar ação " + op + "\nErro:" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -353,8 +352,7 @@ public class Agencia {
                 System.out.println("Aonde salvar os dados ordenados?\n1- Criar novo arquivo ordenado\n" +
                         "2- Usar arquivo original do banco de dados");
                 int dataSave = scan.nextInt();
-                ExternalSort sorter = new ExternalSort("db/conta_banco.db", m, n, dataSave == 1);
-                status = sorter.sortExternal();
+                status = operacao.ordenarArq(m, n, dataSave);
             }
             return status;
         } catch (Exception e) {
@@ -395,17 +393,13 @@ public class Agencia {
      * @throws Exception
      */
     public static boolean menuCompressor() throws Exception {
-        System.out.println("Sistema de compressão e descompressão de arquivos:");
-        System.out.println("1- Comprimir usando Huffman");
-        System.out.println("2- Descomprimir usando Huffman");
-        System.out.println("3- Comprimir usando LZW");
-        System.out.println("4- Descomprimir usando LZW");
+        System.out.println("Sistema de compressão e descompressão de arquivos do banco de dados:");
+        System.out.println("1- Comprimir BD usando Huffman");
+        System.out.println("2- Descomprimir BD usando Huffman");
+        System.out.println("3- Comprimir BD usando LZW");
+        System.out.println("4- Descomprimir BD usando LZW");
         System.out.println("5- Cancelar operação");
         int op = scan.nextInt();
-        if (op == 6) {
-            HuffmanCoding huff = new HuffmanCoding();
-            System.out.println("exit: " + huff.doTest(new java.io.File("db/teste.dat")));
-        }
         if (op == 1 || op == 3)
             return operacao.compress(op);
         else if (op == 2 || op == 4)
