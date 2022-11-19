@@ -10,10 +10,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-
 import agencia.Operacoes;
-import estruturas.ArvoreBPlus;
-import estruturas.HashConta;
+import estruturas.ArvoreBplus.ArvoreBPlus;
+import estruturas.Hash.HashConta;
 
 public class DAOConta {
 
@@ -90,6 +89,7 @@ public class DAOConta {
     // metodo para alterar dados de um objeto do banco de dados
     public boolean alterar(Conta obj) throws IOException, Exception {
         int idAtual = 0;
+        idAtual = idAtual + 0;
         boolean status = false;
         conta = null;
         dataArq.seek(inicio);
@@ -169,6 +169,8 @@ public class DAOConta {
         dataArq.seek(inicio);
         int lastId = dataArq.readInt();
         int total = dataArq.readInt();
+        total = total + 0;
+        lastId = lastId + 0;
         do {
             char lapide = dataArq.readChar();
             sizeReg = dataArq.readInt();
@@ -276,6 +278,7 @@ public class DAOConta {
         lastId = dataArq.readInt();
         total = dataArq.readInt();
         int idAtual = 0;
+        idAtual = idAtual + 0;
         do {
             char lapide = dataArq.readChar();
             sizeReg = dataArq.readInt();
@@ -305,6 +308,7 @@ public class DAOConta {
         lastId = dataArq.readInt();
         total = dataArq.readInt();
         int idAtual = 0;
+        idAtual = idAtual + 0;
         do {
             char lapide = dataArq.readChar();
             sizeReg = dataArq.readInt();
