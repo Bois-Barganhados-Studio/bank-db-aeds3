@@ -7,17 +7,17 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 /**
  * @author Vinicius G Santos
+ * @author Leon Junio Martins
  */
 public class HuffmanCoding {
     private RandomAccessFile src;
     private RandomAccessFile output;
 
     private static final int MAX_MEM_BYTES = 10000;
-    public static final String VERSION = "HuffmanCompressaov0.1";
+    public static final String VERSION = "Compressao-Huffman";
 
     public HuffmanCoding() {
     }
@@ -122,9 +122,6 @@ public class HuffmanCoding {
         // Writes in the file 'x' first bits to be ignored
         byte fillerBits = (byte) (bitLen % 8);
         output.write(fillerBits);
-        for (Entry<Byte, String> et : encodeTable.entrySet()) {
-            System.out.println(et.getKey() + " ---- " + et.getValue());
-        }
         // Creates string builder to append the binary representation
         StringBuilder bin = new StringBuilder();
         // Inserts the first 'x' filler bits
@@ -191,12 +188,14 @@ public class HuffmanCoding {
         // Keeps reading and encoding new bytes util the length is divisible by 8
         // so that it won't produce gaps in the compressed file
         while ((bin.length() % 8) != 0) {
-            bin.append(encodeTable.get(src.readByte()));
+            if (src.getFilePointer() >= src.length())
+                break;
+            else
+                bin.append(encodeTable.get(src.readByte()));
         }
         // Converts string binary representation to actual binary
         // then returns the encoded byte array
         String aux = bin.toString();
-        System.out.println(aux);
         bin.delete(0, bin.length());
         BigInteger bg = new BigInteger(aux, 2);
         return bg.toByteArray();
@@ -211,22 +210,31 @@ public class HuffmanCoding {
      */
     public File decompress(File srcFile) throws IOException, Exception {
         close();
-        File outfile = new File("db/teste.leo");
+        srcFile = genCompressionFile(srcFile);
+        // define arquivo de saida da descompressão
+        File outfile = new File(srcFile.getPath().replace("Compressao", "Descompressao"));
         if (outfile.isFile()) {
             outfile.delete();
             outfile.createNewFile();
         }
+        // Uso de sistema de try autoclose para acessar os dados do arquivo comprimido
         try (RandomAccessFile srcCompressed = new RandomAccessFile(srcFile, "r")) {
+            // inicia escrita e leitura no arquivo de saida
             output = new RandomAccessFile(outfile, "rw");
+            // Arvore em bytes salva no arquivo
             byte[] byteTree = new byte[srcCompressed.readInt()];
             srcCompressed.read(byteTree);
+            // tabela de decodificação em estilo hash
             Hashtable<String, Byte> decodeTable;
             HuffmanTree tree = new HuffmanTree(byteTree);
             decodeTable = tree.getDecodeTable();
+            // byte de exclusão para remover bits de lixo
             byte byteExclusao = srcCompressed.readByte();
+            // ler bytes comprimidos para iniciar sistema de descompressão
             byte bytesCompressed[] = new byte[(int) (srcCompressed.length() - srcCompressed.getFilePointer())];
             srcCompressed.read(bytesCompressed);
             String strBinario = "";
+            // Locomover pelos bytes lidos para criar uma string de caminhos pela arvore
             for (byte bt : bytesCompressed) {
                 String num = Integer.toBinaryString(bt);
                 if (num.length() > 8) {
@@ -239,10 +247,13 @@ public class HuffmanCoding {
                 }
             }
             String caminhoTree = "";
+            // remove bits extras no inicio da string de locomoção
             strBinario = strBinario.substring(byteExclusao);
+            // deslocamento pela arvore para reescrever arquivo original
             for (int ind = 0; ind < strBinario.length(); ind++) {
                 caminhoTree += strBinario.charAt(ind);
                 if (decodeTable.containsKey(caminhoTree)) {
+                    // escrita na saida do arquivo descomprimido
                     output.write(decodeTable.get(caminhoTree));
                     caminhoTree = "";
                 }
