@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 /**
  * @author Vinicius G Santos
@@ -121,6 +122,9 @@ public class HuffmanCoding {
         // Writes in the file 'x' first bits to be ignored
         byte fillerBits = (byte) (bitLen % 8);
         output.write(fillerBits);
+        for (Entry<Byte, String> et : encodeTable.entrySet()) {
+            System.out.println(et.getKey() + " ---- " + et.getValue());
+        }
         // Creates string builder to append the binary representation
         StringBuilder bin = new StringBuilder();
         // Inserts the first 'x' filler bits
@@ -179,12 +183,11 @@ public class HuffmanCoding {
             throws IOException {
         // For each byte up to 'len' position in the byte array
         // appends its string binary representation to the string builder
-        for (int i = 0; i < (int) len; i++)
+        for (int i = 0; i < (int) len; i++) {
             bin.append(encodeTable.get(ba[i]));
+        }
         // Trying to free some memory
         ba = null;
-        /// System.gc(); não é interessante dar GC no meio da execução (pode dar crash
-        /// ou congelar a execução por alguns segundos)
         // Keeps reading and encoding new bytes util the length is divisible by 8
         // so that it won't produce gaps in the compressed file
         while ((bin.length() % 8) != 0) {
@@ -193,8 +196,10 @@ public class HuffmanCoding {
         // Converts string binary representation to actual binary
         // then returns the encoded byte array
         String aux = bin.toString();
+        System.out.println(aux);
         bin.delete(0, bin.length());
-        return new BigInteger(aux, 2).toByteArray();
+        BigInteger bg = new BigInteger(aux, 2);
+        return bg.toByteArray();
     }
 
     /**
@@ -204,16 +209,46 @@ public class HuffmanCoding {
      * @throws IOException If the File is not found or IO error caused by
      *                     RandomAccessFile.
      */
-    public File decompress(File srcFile) throws IOException {
+    public File decompress(File srcFile) throws IOException, Exception {
         close();
-        File outfile = null;
-        try (RandomAccessFile src = new RandomAccessFile(srcFile, "r")) {
-            output = new RandomAccessFile(getDecompressionFile(srcFile), "rw");
-            byte[] ba = new byte[src.readInt()];
-            src.read(ba);
-            Hashtable<String, Byte> decodeTable = new HuffmanTree(ba).getDecodeTable();
-
+        File outfile = new File("db/teste.leo");
+        if (outfile.isFile()) {
+            outfile.delete();
+            outfile.createNewFile();
         }
+        try (RandomAccessFile srcCompressed = new RandomAccessFile(srcFile, "r")) {
+            output = new RandomAccessFile(outfile, "rw");
+            byte[] byteTree = new byte[srcCompressed.readInt()];
+            srcCompressed.read(byteTree);
+            Hashtable<String, Byte> decodeTable;
+            HuffmanTree tree = new HuffmanTree(byteTree);
+            decodeTable = tree.getDecodeTable();
+            byte byteExclusao = srcCompressed.readByte();
+            byte bytesCompressed[] = new byte[(int) (srcCompressed.length() - srcCompressed.getFilePointer())];
+            srcCompressed.read(bytesCompressed);
+            String strBinario = "";
+            for (byte bt : bytesCompressed) {
+                String num = Integer.toBinaryString(bt);
+                if (num.length() > 8) {
+                    num = num.substring(num.length() - 8, num.length());
+                } else {
+                    num = "0".repeat(8 - num.length()) + num;
+                }
+                if (!num.equals("00000000")) {
+                    strBinario += num;
+                }
+            }
+            String caminhoTree = "";
+            strBinario = strBinario.substring(byteExclusao);
+            for (int ind = 0; ind < strBinario.length(); ind++) {
+                caminhoTree += strBinario.charAt(ind);
+                if (decodeTable.containsKey(caminhoTree)) {
+                    output.write(decodeTable.get(caminhoTree));
+                    caminhoTree = "";
+                }
+            }
+        }
+        output.close();
         return outfile;
     }
 

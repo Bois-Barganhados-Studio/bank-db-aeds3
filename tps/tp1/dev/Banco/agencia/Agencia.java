@@ -6,6 +6,7 @@ import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
 import conta.Conta;
 import estruturas.ExternalSort;
+import estruturas.Huffman.HuffmanCoding;
 
 /*
  * Classe para fazer interface com o usuário e realizar ações de IO do banco
@@ -401,6 +402,10 @@ public class Agencia {
         System.out.println("4- Descomprimir usando LZW");
         System.out.println("5- Cancelar operação");
         int op = scan.nextInt();
+        if (op == 6) {
+            HuffmanCoding huff = new HuffmanCoding();
+            System.out.println("exit: " + huff.doTest(new java.io.File("db/teste.dat")));
+        }
         if (op == 1 || op == 3)
             return operacao.compress(op);
         else if (op == 2 || op == 4)

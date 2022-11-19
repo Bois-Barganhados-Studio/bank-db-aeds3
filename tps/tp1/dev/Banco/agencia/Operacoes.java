@@ -15,7 +15,6 @@ import java.io.IOException;
 import conta.Conta;
 import conta.DAOConta;
 import estruturas.Huffman.HuffmanCoding;
-import estruturas.Huffman.HuffmanTree;
 
 public class Operacoes {
 
@@ -170,8 +169,10 @@ public class Operacoes {
         if (op == 1) {
             HuffmanCoding huff = new HuffmanCoding();
             File out = huff.compress(new File(DATABASE));
-            return out.isFile();
+            freeRam();
+            return out.isFile() && out.getTotalSpace() > 0;
         } else {
+            freeRam();
             return false;
         }
     }
@@ -184,12 +185,20 @@ public class Operacoes {
     public boolean decompress(int op) throws Exception {
         if (op == 2) {
             HuffmanCoding huff = new HuffmanCoding();
-            //mexer depois na forma de envio da descompressão
             File out = huff.decompress(new File(DATABASE));
-            return out.isFile();
+            freeRam();
+            return out.isFile() && out.getTotalSpace() > 0;
         } else {
+            freeRam();
             return false;
         }
+    }
+
+    /**
+     * Metodo para limpar a ram pos operações
+     */
+    public void freeRam() {
+        System.gc();
     }
 
     /**
