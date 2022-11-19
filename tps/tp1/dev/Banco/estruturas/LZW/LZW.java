@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+/**
+ * @author Edmar Oliveira
+ * @author Leon Junio Martins
+ */
 public class LZW {
   private File srcFile;
   private RandomAccessFile file;
@@ -17,7 +21,12 @@ public class LZW {
     dicionario = new ArrayList<Byte[]>();
   }
 
-  public void compress() throws IOException {
+  /**
+   * Metodo de compressão do LZW
+   * 
+   * @throws IOException
+   */
+  public File compress() throws IOException {
     ArrayList<Integer> compressed = new ArrayList<Integer>(); // Lista de indices do dicionario
     int maiorIndice = 0; // Maior indice do dicionario para calcular quantos bits serao necessarios
     output = new RandomAccessFile(outputCompressFile(srcFile), "rw");
@@ -76,14 +85,15 @@ public class LZW {
     }
 
     file.close();
+    return srcFile;
   }
 
   private File outputCompressFile(File srcFile) {
-    return new File(srcFile.getParent() + File.separator + "C-LZW_" + srcFile.getName());
+    return new File(srcFile.getParent() + File.separator + "Compress-LZW_" + srcFile.getName());
   }
 
   private File outputDecompressFile(File srcFile) {
-    return new File(srcFile.getParent() + File.separator + "D-LZW_" + srcFile.getName());
+    return new File(srcFile.getParent() + File.separator + "Descompress-LZW_" + srcFile.getName());
   }
 
   private void initialDictionary() throws IOException {
@@ -175,64 +185,72 @@ public class LZW {
     return -1;
   }
 
-  private void decompress() throws IOException {
-    RandomAccessFile outputDecompress = new RandomAccessFile(outputDecompressFile(srcFile), "rw");
+  /**
+   * Metodo de descompressão do LZW percorrendo pré dicionario
+   * 
+   * @throws IOException
+   */
+  public File decompress() throws IOException {
+    File outputFile = outputDecompressFile(srcFile);
+    try (RandomAccessFile outputDecompress = new RandomAccessFile(outputFile, "rw")) {
+      output = new RandomAccessFile(outputCompressFile(srcFile), "rw");
+      dicionario = new ArrayList<Byte[]>();
+      output.seek(0);
+      readDictionary(); // Le o dicionario inicial do arquivo ja comprimido
 
-    dicionario = new ArrayList<Byte[]>();
-    output.seek(0);
-    readDictionary(); // Le o dicionario inicial do arquivo ja comprimido
+      int bits = output.readByte(); // Le a quantidade de bits de cada indice
+      int size = output.readInt(); // Le a quantidade de indices
 
-    int bits = output.readByte(); // Le a quantidade de bits de cada indice
-    int size = output.readInt(); // Le a quantidade de indices
+      String binario = ""; // String que vai armazenar os bits lidos do arquivo
 
-    String binario = ""; // String que vai armazenar os bits lidos do arquivo
-
-    while (output.getFilePointer() < output.length()) {
-      binario += toBinary(output.readByte(), 8); // Preenche a string com os bits lidos do arquivo
-    }
-
-    binario = binario.substring(0, size * bits); // Remove os bits que nao sao indices (0s adicionados no final)
-
-    // Para cada indice
-    for (int i = 0; i < binario.length(); i += bits) {
-      int index = Integer.parseInt(binario.substring(i, i + bits), 2); // Converte o indice de binario para decimal
-
-      Byte[] b = dicionario.get(index); // Pega o byte correspondente ao indice
-      // Sempre deverá existir o primeiro byte do dicionario
-
-      // Escreve o byte no arquivo de saida
-      for (int j = 0; j < b.length; j++) {
-        outputDecompress.writeByte(b[j]);
+      while (output.getFilePointer() < output.length()) {
+        binario += toBinary(output.readByte(), 8); // Preenche a string com os bits lidos do arquivo
       }
 
-      // Agora, tratar o caso em que o indice nao existe no dicionario
-      // E começar a criar novos indices
-      if (i + bits < binario.length()) {
-        int nextIndex = Integer.parseInt(binario.substring(i + bits, i + bits + bits), 2); // Pega o proximo indice
+      binario = binario.substring(0, size * bits); // Remove os bits que nao sao indices (0s adicionados no final)
 
-        if (nextIndex < dicionario.size()) { // Se o proximo indice existir no dicionario
-          Byte[] next = dicionario.get(nextIndex); // Pega o byte correspondente ao proximo indice
-          Byte[] newWord = new Byte[b.length + 1];
+      // Para cada indice
+      for (int i = 0; i < binario.length(); i += bits) {
+        int index = Integer.parseInt(binario.substring(i, i + bits), 2); // Converte o indice de binario para decimal
 
-          // Cria uma nova palavra com o primeiro byte da palavra atual e o primeiro byte
-          // da proxima palavra
-          for (int j = 0; j < b.length; j++) {
-            newWord[j] = b[j];
+        Byte[] b = dicionario.get(index); // Pega o byte correspondente ao indice
+        // Sempre deverá existir o primeiro byte do dicionario
+
+        // Escreve o byte no arquivo de saida
+        for (int j = 0; j < b.length; j++) {
+          outputDecompress.writeByte(b[j]);
+        }
+
+        // Agora, tratar o caso em que o indice nao existe no dicionario
+        // E começar a criar novos indices
+        if (i + bits < binario.length()) {
+          int nextIndex = Integer.parseInt(binario.substring(i + bits, i + bits + bits), 2); // Pega o proximo indice
+
+          if (nextIndex < dicionario.size()) { // Se o proximo indice existir no dicionario
+            Byte[] next = dicionario.get(nextIndex); // Pega o byte correspondente ao proximo indice
+            Byte[] newWord = new Byte[b.length + 1];
+
+            // Cria uma nova palavra com o primeiro byte da palavra atual e o primeiro byte
+            // da proxima palavra
+            for (int j = 0; j < b.length; j++) {
+              newWord[j] = b[j];
+            }
+            newWord[b.length] = next[0];
+
+            dicionario.add(newWord);
+          } else { // Se o proximo indice nao existir no dicionario (caso especial)
+            // Apenas cria uma nova palavra a partir da palavra atual repetida
+            Byte[] newWord = new Byte[b.length + 1];
+            for (int j = 0; j < b.length; j++) {
+              newWord[j] = b[j];
+            }
+            newWord[b.length] = b[0];
+            dicionario.add(newWord);
           }
-          newWord[b.length] = next[0];
-
-          dicionario.add(newWord);
-        } else { // Se o proximo indice nao existir no dicionario (caso especial)
-          // Apenas cria uma nova palavra a partir da palavra atual repetida
-          Byte[] newWord = new Byte[b.length + 1];
-          for (int j = 0; j < b.length; j++) {
-            newWord[j] = b[j];
-          }
-          newWord[b.length] = b[0];
-          dicionario.add(newWord);
         }
       }
     }
+    return outputFile;
   }
 
   private void readDictionary() throws IOException {
@@ -245,10 +263,13 @@ public class LZW {
 
   public void close() throws IOException {
     output.close();
+    file.close();
+    dicionario.clear();
+    dicionario = null;
   }
 
-  public static void main(String[] args) throws IOException {
-    LZW lzw = new LZW(new File("../../db/conta_banco.db"));
+  public void teste(File f) throws IOException {
+    LZW lzw = new LZW(f);
     lzw.compress();
     lzw.decompress();
     lzw.close();
