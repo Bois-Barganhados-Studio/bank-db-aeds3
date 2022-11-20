@@ -270,7 +270,7 @@ public class DAOConta {
     }
 
     public void createListaInvertidaNome() throws Exception {
-        RandomAccessFile lista = new RandomAccessFile("db/listaInvertidaNome.dat", "rw");
+        RandomAccessFile lista = new RandomAccessFile(Operacoes.LISTA_INVERTIDA_NOME, "rw");
         // percorre o dataarq e cria a lista baseado no nome
         // nomes repetidos ficam no mesmo registro
         ArrayList<String> nomes = new ArrayList<>();
@@ -300,7 +300,7 @@ public class DAOConta {
     }
 
     public void createListaInvertidaCidade() throws Exception {
-        RandomAccessFile lista = new RandomAccessFile("db/listaInvertidaCidade.dat", "rw");
+        RandomAccessFile lista = new RandomAccessFile(Operacoes.LISTA_INVERTIDA_CITY, "rw");
         // percorre o dataarq e cria a lista baseado na cidade
         // cidades repetidas ficam no mesmo registro
         ArrayList<String> cidades = new ArrayList<>();

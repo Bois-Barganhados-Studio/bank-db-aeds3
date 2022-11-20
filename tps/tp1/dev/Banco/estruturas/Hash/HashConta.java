@@ -3,6 +3,8 @@ package estruturas.Hash;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import agencia.Operacoes;
+
 public class HashConta {
 
     public RandomAccessFile getPonteirosEnd() {
@@ -45,8 +47,8 @@ public class HashConta {
         System.out.println("Acess HASH");
         this.tamBuck = tamBuck;
         this.p = 2;
-        ponteirosEnd = new RandomAccessFile("db/hasher.db", "rw");
-        bucketsList = new RandomAccessFile("db/buckets.db", "rw");
+        ponteirosEnd = new RandomAccessFile(Operacoes.HASHER, "rw");
+        bucketsList = new RandomAccessFile(Operacoes.BUCKETS, "rw");
         // definindo bytes do bucket
         tamBuckBytes = tamBuck * TAM_INT + TAM_INT_2;
         if (!avaliable()) {

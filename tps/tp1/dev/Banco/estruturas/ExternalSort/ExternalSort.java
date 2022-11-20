@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import agencia.Operacoes;
 import conta.Conta;
 import conta.DAOConta;
 
@@ -62,9 +64,9 @@ public class ExternalSort {
         databaseFile = new RandomAccessFile(databaseFileName, "rw");
         entradaTemporaria = new RandomAccessFile[totalArquivos];
         saidaTemporaria = new RandomAccessFile[totalArquivos];
-        fileTmp = "db/ArqTemp";
+        fileTmp = Operacoes.ARQTEMP_SORT;
         tipoTmp = ".tmp";
-        databaseSaida = "db/conta_banco_sorted.db";
+        databaseSaida = Operacoes.DATABASE_SORTED;
     }
 
     public int getLastId() {
@@ -361,7 +363,7 @@ public class ExternalSort {
             alvoFinal.close();
         } else {
             // adicionar no mesmo arquivo
-            String tempBkp = "db/tempBkp.db";
+            String tempBkp = Operacoes.TEMP;
             File fl = new File(tempBkp);
             if (fl.exists()) {
                 fl.delete();

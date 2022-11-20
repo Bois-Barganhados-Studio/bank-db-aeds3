@@ -22,7 +22,16 @@ public class Operacoes {
 
     private boolean status;
     private DAOConta dao;
-    public static final String DATABASE = "db/conta_banco.db";
+
+    // CAMINHOS DOS ARQUIVOS DO BD
+    public static final String DATABASE = "db" + File.separator + "conta_banco.db";
+    public static final String HASHER = "db" + File.separator + "hasher.db";
+    public static final String BUCKETS = "db" + File.separator + "buckets.db";
+    public static final String TEMP = "db" + File.separator + "tempBkp.db";
+    public static final String DATABASE_SORTED = "conta_banco_sorted.db";
+    public static final String ARQTEMP_SORT = "db" + File.separator + "ArqTemp";
+    public static final String LISTA_INVERTIDA_NOME = "db" + File.separator + "listaInvertidaNome.dat";
+    public static final String LISTA_INVERTIDA_CITY = "db" + File.separator + "listaInvertidaCidade.dat";
 
     public Operacoes() throws Exception {
         status = false;
@@ -62,7 +71,7 @@ public class Operacoes {
      * @return booleano caso o arquivo seja ordenado com sucesso
      */
     public boolean ordenarArq(int m, int n, int dataSave) throws Exception {
-        ExternalSort sorter = new ExternalSort("db/conta_banco.db", m, n, dataSave == 1);
+        ExternalSort sorter = new ExternalSort("db" + File.separator + "conta_banco.db", m, n, dataSave == 1);
         boolean sit = sorter.sortExternal();
         freeRam();
         return sit;
