@@ -1,7 +1,5 @@
 package agencia;
 
-import java.io.File;
-
 /*
  * Classe para armazenar operações e ações do nosso banco quanto agencia
  * Tratar exceções de operação DAO nessa classe
@@ -11,7 +9,10 @@ import java.io.File;
  * @author Edmar Oliveira
  */
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import conta.Conta;
 import estruturas.ExternalSort.ExternalSort;
 import conta.DAOConta;
@@ -24,18 +25,36 @@ public class Operacoes {
     private DAOConta dao;
 
     // CAMINHOS DOS ARQUIVOS DO BD
-    public static final String DATABASE = "db" + File.separator + "conta_banco.db";
-    public static final String HASHER = "db" + File.separator + "hasher.db";
-    public static final String BUCKETS = "db" + File.separator + "buckets.db";
-    public static final String TEMP = "db" + File.separator + "tempBkp.db";
-    public static final String DATABASE_SORTED = "conta_banco_sorted.db";
-    public static final String ARQTEMP_SORT = "db" + File.separator + "ArqTemp";
-    public static final String LISTA_INVERTIDA_NOME = "db" + File.separator + "listaInvertidaNome.dat";
-    public static final String LISTA_INVERTIDA_CITY = "db" + File.separator + "listaInvertidaCidade.dat";
+    private Path arq;
+    public static String DATABASE;
+    public static String HASHER;
+    public static String BUCKETS;
+    public static String TEMP;
+    public static String DATABASE_SORTED;
+    public static String ARQTEMP_SORT;
+    public static String LISTA_INVERTIDA_NOME;
+    public static String LISTA_INVERTIDA_CITY;
 
-    public Operacoes() throws Exception {
-        status = false;
-        dao = new DAOConta();
+    public Operacoes() {
+        try {
+            status = false;
+            arq = Paths.get(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+            String root = "";
+            root = arq.toString().endsWith(".jar")
+                    ? arq.toString().substring(0, arq.toString().lastIndexOf(File.separator))
+                    : arq.toString();
+            Operacoes.DATABASE = root + "" + File.separator + "db" + File.separator + "conta_banco.db";
+            HASHER = root + "" + File.separator + "db" + File.separator + "hasher.db";
+            BUCKETS = root + "" + File.separator + "db" + File.separator + "buckets.db";
+            TEMP = root + "" + File.separator + "db" + File.separator + "tempBkp.db";
+            DATABASE_SORTED = root + "" + File.separator + "conta_banco_sorted.db";
+            ARQTEMP_SORT = root + "" + File.separator + "db" + File.separator + "ArqTemp";
+            LISTA_INVERTIDA_NOME = root + "" + File.separator + "db" + File.separator + "listaInvertidaNome.dat";
+            LISTA_INVERTIDA_CITY = root + "" + File.separator + "db" + File.separator + "listaInvertidaCidade.dat";
+            dao = new DAOConta();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -71,7 +90,7 @@ public class Operacoes {
      * @return booleano caso o arquivo seja ordenado com sucesso
      */
     public boolean ordenarArq(int m, int n, int dataSave) throws Exception {
-        ExternalSort sorter = new ExternalSort("db" + File.separator + "conta_banco.db", m, n, dataSave == 1);
+        ExternalSort sorter = new ExternalSort(DATABASE, m, n, dataSave == 1);
         boolean sit = sorter.sortExternal();
         freeRam();
         return sit;

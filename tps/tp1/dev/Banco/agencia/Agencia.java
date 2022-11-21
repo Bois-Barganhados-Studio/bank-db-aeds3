@@ -16,7 +16,7 @@ public class Agencia {
 
     public static Scanner scan = new Scanner(System.in);
     public static boolean running = false;
-    public static Operacoes operacao;
+    public static Operacoes operacao = new Operacoes();
 
     public static void main(String[] args) {
         int op = 0;
@@ -27,7 +27,6 @@ public class Agencia {
             System.out.println("=============================================================");
             Thread.sleep(2000);
             running = true;
-            operacao = new Operacoes();
             while (running) {
                 try {
                     System.out.println("\nBem Vindo ao banco mágico, escolha uma opção:");
