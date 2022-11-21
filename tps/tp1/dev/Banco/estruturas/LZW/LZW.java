@@ -14,11 +14,22 @@ public class LZW {
   private RandomAccessFile file;
   private RandomAccessFile output;
   private ArrayList<Byte[]> dicionario;
+  public static final String VERSION = "V1.0-";
+  private boolean path = false;
 
-  public LZW(File srcFile) throws IOException {
+  /**
+   * Contrutor do LZW para informa se o path dos caminhos é fixo ou posicional de
+   * acordo com o local de
+   * execução
+   * 
+   * @param srcFile arquivo de fonte para realizar ações de compressão
+   * @param path    booleano para definir se o caminho de execução é local ou fixo
+   */
+  public LZW(File srcFile, boolean path) throws IOException {
     this.srcFile = srcFile;
     file = new RandomAccessFile(srcFile, "r");
     dicionario = new ArrayList<Byte[]>();
+    this.path = path;
   }
 
   /**
@@ -89,11 +100,13 @@ public class LZW {
   }
 
   private File outputCompressFile(File srcFile) {
-    return new File(srcFile.getParent() + File.separator + "Compress-LZW_" + srcFile.getName());
+    return new File(
+        !path ? srcFile.getParent() : "db" + File.separator + "Compress-LZW_" + VERSION + srcFile.getName());
   }
 
   private File outputDecompressFile(File srcFile) {
-    return new File(srcFile.getParent() + File.separator + "Descompress-LZW_" + srcFile.getName());
+    return new File(
+        !path ? srcFile.getParent() : "db" + File.separator + "Descompress-LZW_" + VERSION + srcFile.getName());
   }
 
   private void initialDictionary() throws IOException {
@@ -268,10 +281,10 @@ public class LZW {
     dicionario = null;
   }
 
-  public void teste(File f) throws IOException {
-    LZW lzw = new LZW(f);
-    lzw.compress();
-    lzw.decompress();
-    lzw.close();
+  public boolean doTeste() throws IOException {
+    boolean sit = false;
+    sit = this.compress().isFile() && this.decompress().isFile();
+    this.close();
+    return sit;
   }
 }

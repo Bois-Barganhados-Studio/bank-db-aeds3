@@ -17,9 +17,18 @@ public class HuffmanCoding {
     private RandomAccessFile output;
 
     private static final int MAX_MEM_BYTES = 10000;
-    public static final String VERSION = "Compressao-Huffman";
+    public static final String VERSION = "Compressao-Huffman-V1.0-";
+    private boolean path = false;
 
-    public HuffmanCoding() {
+    /**
+     * Construtor do metodo de compressão que informa se o path dos caminhos é fixo
+     * ou posicional de acordo com o local de
+     * execução
+     * 
+     * @param path booleano para definir se o caminho de execução é local ou fixo
+     */
+    public HuffmanCoding(boolean path) {
+        this.path = path;
     }
 
     /**
@@ -46,7 +55,7 @@ public class HuffmanCoding {
      */
     private File genCompressionFile(File srcFile) {
         // Adds the compression version
-        return new File(srcFile.getParent() + File.separator + VERSION + srcFile.getName());
+        return new File((!path ? srcFile.getParent() : "db") + File.separator + VERSION + srcFile.getName());
     }
 
     /**
@@ -204,13 +213,15 @@ public class HuffmanCoding {
     /**
      * Decompresses the given source file based on the Huffman coding algorithm.
      *
-     * @param srcFile The name of the source file.
+     * @param srcFile    The name of the source file.
+     * @param createFile choose if the filter of path name will be used to gen File
      * @throws IOException If the File is not found or IO error caused by
      *                     RandomAccessFile.
      */
-    public File decompress(File srcFile) throws IOException, Exception {
+    public File decompress(File srcFile, boolean createFile) throws IOException, Exception {
         close();
-        srcFile = genCompressionFile(srcFile);
+        if (createFile)
+            srcFile = genCompressionFile(srcFile);
         // define arquivo de saida da descompressão
         File outfile = new File(srcFile.getPath().replace("Compressao", "Descompressao"));
         if (outfile.isFile()) {
@@ -242,9 +253,9 @@ public class HuffmanCoding {
                 } else {
                     num = "0".repeat(8 - num.length()) + num;
                 }
-                if (!num.equals("00000000")) {
-                    strBinario += num;
-                }
+                // if (!num.equals("00000000")) {
+                strBinario += num;
+                // }
             }
             String caminhoTree = "";
             // remove bits extras no inicio da string de locomoção
@@ -272,7 +283,9 @@ public class HuffmanCoding {
      */
     public File getDecompressionFile(File srcFile) throws IOException {
         // Removes the compression version from the string
-        return new File(srcFile.getParent() + File.separator + srcFile.getName().substring(VERSION.length()));
+        return new File((!path ? srcFile.getParent()
+                : "db") + File.separator +
+                srcFile.getName().substring(VERSION.length()));
     }
 
     // Basic Testing
@@ -281,7 +294,7 @@ public class HuffmanCoding {
         boolean sit = false;
         try (RandomAccessFile raf = new RandomAccessFile(in, "rw")) {
             raf.write(ba);
-            sit = this.decompress(this.compress(in)).isFile();
+            sit = this.decompress(this.compress(in), false).isFile();
         } catch (Exception e) {
             e.printStackTrace();
         }

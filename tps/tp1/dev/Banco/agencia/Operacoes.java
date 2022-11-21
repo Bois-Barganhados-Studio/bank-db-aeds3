@@ -212,12 +212,12 @@ public class Operacoes {
      */
     public boolean compress(int op) throws Exception {
         if (op == 1) {
-            HuffmanCoding huff = new HuffmanCoding();
+            HuffmanCoding huff = new HuffmanCoding(true);
             File out = huff.compress(new File(DATABASE));
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         } else {
-            LZW lzw = new LZW(new File(DATABASE));
+            LZW lzw = new LZW(new File(DATABASE), true);
             File out = lzw.compress();
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
@@ -231,16 +231,32 @@ public class Operacoes {
      */
     public boolean decompress(int op) throws Exception {
         if (op == 2) {
-            HuffmanCoding huff = new HuffmanCoding();
-            File out = huff.decompress(new File(DATABASE));
+            HuffmanCoding huff = new HuffmanCoding(true);
+            File out = huff.decompress(new File(DATABASE), true);
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         } else {
-            LZW lzw = new LZW(new File(DATABASE));
+            LZW lzw = new LZW(new File(DATABASE), true);
             File out = lzw.decompress();
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         }
+    }
+
+    /**
+     * Função que chama o teste global de LZW e huffman para comprimir e
+     * descomprimir com todos os metodos
+     */
+    public boolean testarCompressoes() throws Exception {
+        boolean sit = false;
+        LZW lzw = new LZW(new File(DATABASE), true);
+        HuffmanCoding huff = new HuffmanCoding(true);
+        sit = lzw.doTeste() && huff.doTest(new File("db" + File.separator + "testehuff.db"));
+        if (sit) {
+            System.out.println("LZW testado com sucesso!");
+            System.out.println("Huffman testado com sucesso!");
+        }
+        return sit;
     }
 
     /**

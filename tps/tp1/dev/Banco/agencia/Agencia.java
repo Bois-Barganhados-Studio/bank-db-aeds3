@@ -397,12 +397,15 @@ public class Agencia {
         System.out.println("2- Descomprimir BD usando Huffman");
         System.out.println("3- Comprimir BD usando LZW");
         System.out.println("4- Descomprimir BD usando LZW");
-        System.out.println("5- Cancelar operação");
+        System.out.println("5- Testar todos os sistemas de compressão e descompressão");
+        System.out.println("6- Cancelar operação");
         int op = scan.nextInt();
         if (op == 1 || op == 3)
             return operacao.compress(op);
         else if (op == 2 || op == 4)
             return operacao.decompress(op);
+        else if (op == 5)
+            return operacao.testarCompressoes();
         else
             return true;
     }
