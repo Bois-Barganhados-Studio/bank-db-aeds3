@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import agencia.Operacoes;
+
 /**
  * @author Edmar Oliveira
  * @author Leon Junio Martins
@@ -201,10 +203,12 @@ public class LZW {
   /**
    * Metodo de descompressão do LZW percorrendo pré dicionario
    * 
+   * @params createFile pergunta se deseja criar novo arquivo ou usar o arquivo de
+   *         base do sistema
    * @throws IOException
    */
-  public File decompress() throws IOException {
-    File outputFile = outputDecompressFile(srcFile);
+  public File decompress(boolean createFile) throws IOException {
+    File outputFile = !createFile ? new File(Operacoes.DATABASE) : outputDecompressFile(srcFile);
     try (RandomAccessFile outputDecompress = new RandomAccessFile(outputFile, "rw")) {
       output = new RandomAccessFile(outputCompressFile(srcFile), "rw");
       dicionario = new ArrayList<Byte[]>();
@@ -283,7 +287,7 @@ public class LZW {
 
   public boolean doTeste() throws IOException {
     boolean sit = false;
-    sit = this.compress().isFile() && this.decompress().isFile();
+    sit = this.compress().isFile() && this.decompress(true).isFile();
     this.close();
     return sit;
   }

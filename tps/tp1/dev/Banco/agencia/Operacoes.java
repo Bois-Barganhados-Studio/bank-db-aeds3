@@ -34,6 +34,7 @@ public class Operacoes {
     public static String ARQTEMP_SORT;
     public static String LISTA_INVERTIDA_NOME;
     public static String LISTA_INVERTIDA_CITY;
+    public static final boolean CREATEFILE = true;
 
     public Operacoes() {
         try {
@@ -232,12 +233,12 @@ public class Operacoes {
     public boolean decompress(int op) throws Exception {
         if (op == 2) {
             HuffmanCoding huff = new HuffmanCoding(true);
-            File out = huff.decompress(new File(DATABASE), true);
+            File out = huff.decompress(new File(DATABASE), CREATEFILE);
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         } else {
             LZW lzw = new LZW(new File(DATABASE), true);
-            File out = lzw.decompress();
+            File out = lzw.decompress(CREATEFILE);
             freeRam();
             return out.isFile() && out.getTotalSpace() > 0;
         }
