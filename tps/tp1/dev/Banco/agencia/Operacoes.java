@@ -212,17 +212,40 @@ public class Operacoes {
      * @return
      */
     public boolean compress(int op) throws Exception {
+        long start = System.currentTimeMillis(), end = 0;
+        File out = null;
         if (op == 1) {
             HuffmanCoding huff = new HuffmanCoding(true);
-            File out = huff.compress(new File(DATABASE));
+            out = huff.compress(new File(DATABASE));
             freeRam();
-            return out.isFile() && out.getTotalSpace() > 0;
+            end = System.currentTimeMillis();
         } else {
             LZW lzw = new LZW(new File(DATABASE), true);
-            File out = lzw.compress();
+            out = lzw.compress();
             freeRam();
-            return out.isFile() && out.getTotalSpace() > 0;
+            end = System.currentTimeMillis();
         }
+        comparador(out);
+        System.out.println((end - start) + "ms de execução do algoritmo de compressão");
+        return out.isFile() && out.length() > 0;
+    }
+
+    /**
+     * Compara um arquivo com o arquivo de dados criado
+     * 
+     * @param f arquivo qualquer alvo da comparação
+     */
+    public void comparador(File f) throws Exception {
+        File db = new File(DATABASE);
+        long bytesComp = f.length();
+        long bytesDb = db.length();
+        System.out.println(f.getAbsolutePath());
+        System.out.println(db.getAbsolutePath());
+        System.out.println("Comparação de arquivos:");
+        System.out.println("Arquivo gerado pelo algoritmo: " + bytesComp + " bytes");
+        System.out.println("Arquivo original do banco de dados: " + bytesDb + " bytes");
+        System.out
+                .println("Taxa de diferença entre arquivos: " + ((float) bytesDb / bytesComp) + " vezes de diferença");
     }
 
     /**
@@ -231,17 +254,21 @@ public class Operacoes {
      * @return
      */
     public boolean decompress(int op) throws Exception {
+        long start = System.currentTimeMillis(), end = 0;
+        File out = null;
         if (op == 2) {
             HuffmanCoding huff = new HuffmanCoding(true);
-            File out = huff.decompress(new File(DATABASE), CREATEFILE);
+            out = huff.decompress(new File(DATABASE), CREATEFILE);
             freeRam();
-            return out.isFile() && out.getTotalSpace() > 0;
+            end = System.currentTimeMillis();
         } else {
             LZW lzw = new LZW(new File(DATABASE), true);
-            File out = lzw.decompress(CREATEFILE);
+            out = lzw.decompress(CREATEFILE);
             freeRam();
-            return out.isFile() && out.getTotalSpace() > 0;
+            end = System.currentTimeMillis();
         }
+        System.out.println((end - start) + "ms de execução do algoritmo de descompressão");
+        return out.isFile() && out.length() > 0;
     }
 
     /**

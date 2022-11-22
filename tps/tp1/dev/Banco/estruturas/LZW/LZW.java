@@ -98,7 +98,7 @@ public class LZW {
     }
 
     file.close();
-    return srcFile;
+    return outputCompressFile(srcFile);
   }
 
   private File outputCompressFile(File srcFile) {
