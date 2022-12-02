@@ -35,6 +35,7 @@ public class Operacoes {
     public static String LISTA_INVERTIDA_NOME;
     public static String LISTA_INVERTIDA_CITY;
     public static final boolean CREATEFILE = true;
+    public static final String TESTE = "db/pic.bmp";
 
     public Operacoes() {
         try {
@@ -216,11 +217,11 @@ public class Operacoes {
         File out = null;
         if (op == 1) {
             HuffmanCoding huff = new HuffmanCoding(true);
-            out = huff.compress(new File(DATABASE));
+            out = huff.compress(new File(TESTE));
             freeRam();
             end = System.currentTimeMillis();
         } else {
-            LZW lzw = new LZW(new File(DATABASE), true);
+            LZW lzw = new LZW(new File(TESTE), true);
             out = lzw.compress();
             freeRam();
             end = System.currentTimeMillis();
@@ -236,7 +237,7 @@ public class Operacoes {
      * @param f arquivo qualquer alvo da comparação
      */
     public void comparador(File f) throws Exception {
-        File db = new File(DATABASE);
+        File db = new File(TESTE);
         long bytesComp = f.length();
         long bytesDb = db.length();
         System.out.println(f.getAbsolutePath());
@@ -258,11 +259,11 @@ public class Operacoes {
         File out = null;
         if (op == 2) {
             HuffmanCoding huff = new HuffmanCoding(true);
-            out = huff.decompress(new File(DATABASE), CREATEFILE);
+            out = huff.decompress(new File(TESTE), CREATEFILE);
             freeRam();
             end = System.currentTimeMillis();
         } else {
-            LZW lzw = new LZW(new File(DATABASE), true);
+            LZW lzw = new LZW(new File(TESTE), true);
             out = lzw.decompress(CREATEFILE);
             freeRam();
             end = System.currentTimeMillis();
