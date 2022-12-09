@@ -1,5 +1,5 @@
 package estruturas.PatternSearch;
 
-interface PatternSearcher {
-    PatternSearchInfo apply(String needle, String haystack);
+public interface PatternSearcher {
+    public PatternSearchInfo apply(String needle, String haystack);
 }
