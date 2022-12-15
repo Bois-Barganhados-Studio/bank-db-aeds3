@@ -37,4 +37,13 @@ class PatternSearchInfo {
         this.foundCount += aux.foundCount;
         this.numComp += aux.numComp;
     }
+
+    public void addNumComp(int i) {
+        this.numComp += i;
+    }
+
+    public void addFoundCount(int i) {
+        this.foundCount += i;
+    }
+
 }
