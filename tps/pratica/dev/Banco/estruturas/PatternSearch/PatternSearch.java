@@ -5,6 +5,7 @@ import conta.Conta;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
+import java.util.function.BiFunction;
 
 public class PatternSearch {
     private final RandomAccessFile src;
@@ -27,7 +28,7 @@ public class PatternSearch {
      * @param searcher The desired pattern searching function to be used.
      * @throws Exception I/O errors caused by RandomAccessFile.
      */
-    public void search(String pattern, PatternSearcher searcher) throws Exception {
+    public void search(String pattern, BiFunction<String, String, PatternSearchInfo> searcher) throws Exception {
         src.seek(FILE_HEADER_SIZE);
         Conta[] regs = getContas();
         PatternSearchInfo info = new PatternSearchInfo();
