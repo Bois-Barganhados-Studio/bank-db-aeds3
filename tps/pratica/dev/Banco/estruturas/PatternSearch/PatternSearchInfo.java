@@ -3,7 +3,7 @@ package estruturas.PatternSearch;
 /**
  * Wrapper class for storing the info returned from the pattern searching functions.
  */
-class PatternSearchInfo {
+public class PatternSearchInfo {
     private int foundCount;
     private int numComp;
 

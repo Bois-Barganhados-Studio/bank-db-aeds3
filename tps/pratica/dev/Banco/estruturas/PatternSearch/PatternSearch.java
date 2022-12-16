@@ -14,17 +14,19 @@ public class PatternSearch {
 
     /**
      * Pattern Search class wrapper constructor.
+     * 
      * @param srcFile the file containing the registers to be read.
      * @throws FileNotFoundException I/O errors caused by RandomAccessFile.
      */
-    PatternSearch(File srcFile) throws FileNotFoundException {
+    public PatternSearch(File srcFile) throws FileNotFoundException {
         src = new RandomAccessFile(srcFile, "r");
     }
 
     /**
      * Wrapper function to read file, convert registers to string
      * then call the desired pattern searching method.
-     * @param pattern The string pattern to be searched in the file.
+     * 
+     * @param pattern  The string pattern to be searched in the file.
      * @param searcher The desired pattern searching function to be used.
      * @throws Exception I/O errors caused by RandomAccessFile.
      */
@@ -33,7 +35,7 @@ public class PatternSearch {
         Conta[] regs = getContas();
         PatternSearchInfo info = new PatternSearchInfo();
         while (regs[0] != null) {
-            for (int i = 0; regs[i] != null; ) {
+            for (int i = 0; regs[i] != null;) {
                 info.sum(searcher.apply(pattern, regs[i++].toString()));
             }
             regs = getContas();
@@ -44,6 +46,7 @@ public class PatternSearch {
 
     /**
      * Reads up to MAX_MEM_CONTA valid Conta instances from the file.
+     * 
      * @return Array of contas read from file.
      * @throws Exception I/O errors caused by RandomAccessFile.
      */
@@ -64,4 +67,3 @@ public class PatternSearch {
         return regs;
     }
 }
-
