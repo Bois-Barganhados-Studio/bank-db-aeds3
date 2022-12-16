@@ -5,6 +5,9 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.management.InvalidAttributeValueException;
 import conta.Conta;
+import estruturas.PatternSearch.BoyerMoore;
+import estruturas.PatternSearch.PatternSearch;
+import java.io.File;
 
 /*
  * Classe para fazer interface com o usuário e realizar ações de IO do banco
@@ -17,6 +20,7 @@ public class Agencia {
     public static Scanner scan = new Scanner(System.in);
     public static boolean running = false;
     public static Operacoes operacao = new Operacoes();
+    public static PatternSearch padrao;
 
     public static void main(String[] args) {
         int op = 0;
@@ -27,6 +31,7 @@ public class Agencia {
             System.out.println("=============================================================");
             Thread.sleep(2000);
             running = true;
+            padrao = new PatternSearch(new File(Operacoes.DATABASE));
             while (running) {
                 try {
                     System.out.println("\nBem Vindo ao banco mágico, escolha uma opção:");
@@ -147,7 +152,13 @@ public class Agencia {
                 case 9:
                     status = menuCompressor();
                     if (status) {
-                        System.out.println("Atualizado com sucesso na base de dados!");
+                        System.out.println("Comprimido com sucesso na base de dados!");
+                    }
+                    break;
+                case 10:
+                    status = true;
+                    if (status) {
+                        System.out.println("Busca realizada com sucesso na base de dados!");
                     }
                     break;
                 default:
@@ -164,6 +175,23 @@ public class Agencia {
         } catch (Exception e) {
             System.err.println("Erro inesperado ao tentar realizar ação " + op + "\nErro:" + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Menu visual para inserção de contas
+     * 
+     * @return Conta já preenchida
+     */
+    public static boolean menuPadrao() {
+        try {
+            System.out.println("O sistema realizara uma busca por seu padrão no arquivo de dados\nDigite o padrão:");
+            String txt = scan.nextLine();
+            padrao.search(txt, BoyerMoore::find);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
