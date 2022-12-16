@@ -157,7 +157,7 @@ public class Agencia {
                     }
                     break;
                 case 10:
-                    status = true;
+                    status = menuPadrao();
                     if (status) {
                         System.out.println("Busca realizada com sucesso na base de dados!");
                     }
@@ -186,6 +186,7 @@ public class Agencia {
      */
     public static boolean menuPadrao() {
         try {
+            scan.nextLine();
             System.out.println("O sistema realizara uma busca por seu padrão no arquivo de dados\nDigite o padrão:");
             String txt = scan.nextLine();
             padrao.search(txt, BoyerMoore::find);
