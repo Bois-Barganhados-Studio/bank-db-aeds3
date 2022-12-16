@@ -10,9 +10,9 @@ import estruturas.PatternSearch.PatternSearch;
 import java.io.File;
 
 /*
- * Classe para fazer interface com o usuário e realizar ações de IO do banco
  * @author Leon Junio
  * @author Edmar Oliveira
+ * @author Vinicius G Santos
  */
 
 public class Agencia {
@@ -44,6 +44,7 @@ public class Agencia {
                     System.out.println("7- Popular Banco de dados (teste):");
                     System.out.println("8- Buscar informação no HASH:");
                     System.out.println("9- Sistema de compressão/descompressão do banco de dados:");
+                    System.out.println("10- Buscar padrões no banco de dados:");
                     System.out.println("0- Sair do sistema e finalizar operações");
                     System.out.println("Digite a opção de operação:");
                     op = scan.nextInt();
