@@ -1,5 +1,8 @@
 package estruturas.Cryptography;
 
+/**
+ * @author Leon Jr Martins Ferreira
+ */
 public class Keygen {
 
     /**

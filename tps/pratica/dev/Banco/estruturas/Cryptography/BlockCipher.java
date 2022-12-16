@@ -1,10 +1,21 @@
 package estruturas.Cryptography;
 
+/**
+ * @author Leon Jr Martins Ferreira
+ */
 public class BlockCipher implements Cryptable {
 
     public static final int BLOCK_SIZE = 6; // 6 Bytes
-    public static final String DEFAULT_KEY = "teste";
+    public static String DEFAULT_KEY;
     private int indexCipher = 0;
+
+    public BlockCipher(String key) {
+        DEFAULT_KEY = key;
+    }
+
+    public BlockCipher() {
+        DEFAULT_KEY = "teste";
+    }
 
     @Override
     public String crypt(String base) {
@@ -30,17 +41,17 @@ public class BlockCipher implements Cryptable {
         byte[] key = Keygen.generateKey(data.length > BLOCK_SIZE ? BLOCK_SIZE : data.length, DEFAULT_KEY), block,
                 resp = new byte[data.length];
         indexCipher = 0;
-        int index = 0;
+        int indexResposta = 0;
         do {
             block = getBlock(data);
             for (int i = 0; i < block.length; i++) {
-                resp[index] = isCrypt ? ((byte) (block[i] ^ key[i])) : ((byte) (key[i] ^ block[i]));
-                index++;
+                resp[indexResposta] = isCrypt ? ((byte) (block[i] ^ key[i])) : ((byte) (key[i] ^ block[i]));
+                indexResposta++;
             }
             // usando bloco para criar nova chave
             if (indexCipher < data.length) {
                 String newkey = isCrypt ? new String(block)
-                        : new String(resp).substring((index - block.length), index);
+                        : new String(resp).substring((indexResposta - block.length), indexResposta);
                 key = Keygen.generateKey(data.length > BLOCK_SIZE ? BLOCK_SIZE : data.length, newkey);
             }
         } while (indexCipher < data.length);
