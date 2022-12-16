@@ -22,7 +22,8 @@ public class Keygen {
             seed = seed.substring(0, size);
         }
         key = seed.toCharArray();
-        int[] stream = pass.chars().map(t -> t = t + pass.length()).toArray();
+        pass = pass.repeat(size);
+        int[] stream = pass.chars().map(t -> t = t + size + 7).toArray();
         for (int i = 0; i < size; i++) {
             key[i] = ((char) (key[i] ^ stream[i]));
         }

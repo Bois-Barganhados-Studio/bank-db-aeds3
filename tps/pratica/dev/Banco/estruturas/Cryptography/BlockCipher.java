@@ -19,7 +19,7 @@ public class BlockCipher implements Cryptable {
     }
 
     public BlockCipher() {
-        DEFAULT_KEY = "teste";
+        DEFAULT_KEY = "teste*.*123";
     }
 
     @Override
