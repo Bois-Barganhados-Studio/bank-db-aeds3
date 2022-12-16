@@ -10,21 +10,23 @@ public class Keygen {
      * 
      * @param size tamanho do bloco alocado no momento
      * @param seed String alvo para virar um bitstream
+     * @param pass Uma senha para ajudar na formação aleatoria do bitStream
      * @return uma chave em formato de byte
      */
-    public static byte[] generateKey(int size, String seed) {
-        byte[] key = new byte[size];
+    public static char[] generateKey(int size, String seed, String pass) throws Exception {
+        char[] key = new char[size];
         if (seed.length() < size) {
             int alvo = size - seed.length();
-            seed += String.valueOf(seed.charAt(0)).repeat(alvo);
+            seed += String.valueOf(seed).repeat(alvo);
         } else if (seed.length() > size) {
             seed = seed.substring(0, size);
         }
-        key = seed.getBytes();
-        byte[] stream = String.valueOf(seed.charAt(seed.length() - 1)).repeat(size).getBytes();
+        key = seed.toCharArray();
+        int[] stream = pass.chars().map(t -> t = t + pass.length()).toArray();
         for (int i = 0; i < size; i++) {
-            key[i] = (byte) (key[i] ^ stream[i]);
+            key[i] = ((char) (key[i] ^ stream[i]));
         }
         return key;
     }
+
 }
