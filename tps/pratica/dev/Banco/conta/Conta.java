@@ -22,15 +22,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import estruturas.Cryptography.BlockCipher;
 
 public class Conta implements Comparable<Conta>, Serializable {
-
+    private static final BlockCipher CIPHER = new BlockCipher();
     private int idConta, transferenciasRealizadas;
     private String nomePessoa, nomeUsuario, senha, cpf, cidade, email[];
     private float saldoConta;
 
     public Conta() {
-        this.idConta = -1;
+        setIdConta(-1);
         this.transferenciasRealizadas = 0;
         this.nomePessoa = "";
         this.nomeUsuario = "";
@@ -53,15 +54,15 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public Conta(int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
-            String cpf, String cidade, String[] email, float saldoConta) {
-        this.transferenciasRealizadas = transferenciasRealizadas;
-        this.nomePessoa = nomePessoa;
-        this.nomeUsuario = nomeUsuario;
-        this.senha = senha;
-        this.cpf = cpf;
-        this.cidade = cidade;
-        this.email = email;
-        this.saldoConta = saldoConta;
+            String cpf, String cidade, String[] email, float saldoConta) throws Exception {
+        setTransferenciasRealizadas(transferenciasRealizadas);
+        setNomePessoa(nomePessoa);
+        setNomeUsuario(nomeUsuario);
+        setSenha(senha);
+        setCpf(cpf);
+        setCidade(cidade);
+        setEmail(email);
+        setSaldoConta(saldoConta);
     }
 
     public Conta(int id, int transferenciasRealizadas, String nomePessoa, String nomeUsuario, String senha,
@@ -179,11 +180,11 @@ public class Conta implements Comparable<Conta>, Serializable {
     }
 
     public String getSenha() {
-        return senha.replace("\n", "");
+        return CIPHER.decrypt(senha).replace("\n", "");
     }
 
     public void setSenha(String senha) {
-        this.senha = senha;
+        this.senha = CIPHER.crypt(senha);
     }
 
     public String getCpf() {
