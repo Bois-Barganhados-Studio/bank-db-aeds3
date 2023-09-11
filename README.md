@@ -19,5 +19,5 @@ Clone the repository and run the java project
 
 - [@Leon Junio](https://www.github.com/leon-junio)
 - [@Vinicius Gabriel](https://www.github.com/ravixr)
-- [@Felipe Moura](https://www.github.com/Lexizz7)
+- [@Edmar Melandes](https://www.github.com/Lexizz7)
 
